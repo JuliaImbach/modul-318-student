@@ -35,7 +35,6 @@
             this.txtEndStation = new System.Windows.Forms.TextBox();
             this.label3 = new System.Windows.Forms.Label();
             this.btnDeparture = new System.Windows.Forms.Button();
-            this.btnMap = new System.Windows.Forms.Button();
             this.listViewConnection = new System.Windows.Forms.ListView();
             this.StatusBar = new System.Windows.Forms.StatusStrip();
             this.StatusBarLabel = new System.Windows.Forms.ToolStripStatusLabel();
@@ -97,23 +96,13 @@
             // 
             // btnDeparture
             // 
-            this.btnDeparture.Location = new System.Drawing.Point(453, 30);
+            this.btnDeparture.Location = new System.Drawing.Point(372, 71);
             this.btnDeparture.Name = "btnDeparture";
             this.btnDeparture.Size = new System.Drawing.Size(75, 23);
             this.btnDeparture.TabIndex = 4;
             this.btnDeparture.Text = "Abfahrstafel";
             this.btnDeparture.UseVisualStyleBackColor = true;
             this.btnDeparture.Click += new System.EventHandler(this.btnStationBoard_Click);
-            // 
-            // btnMap
-            // 
-            this.btnMap.Location = new System.Drawing.Point(372, 73);
-            this.btnMap.Name = "btnMap";
-            this.btnMap.Size = new System.Drawing.Size(75, 23);
-            this.btnMap.TabIndex = 7;
-            this.btnMap.Text = "Map";
-            this.btnMap.UseVisualStyleBackColor = true;
-            this.btnMap.Click += new System.EventHandler(this.btnMap_Click);
             // 
             // listViewConnection
             // 
@@ -146,7 +135,6 @@
             this.ClientSize = new System.Drawing.Size(542, 315);
             this.Controls.Add(this.StatusBar);
             this.Controls.Add(this.listViewConnection);
-            this.Controls.Add(this.btnMap);
             this.Controls.Add(this.btnDeparture);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.label2);
@@ -154,6 +142,8 @@
             this.Controls.Add(this.label1);
             this.Controls.Add(this.txtStartStation);
             this.Controls.Add(this.cmdSearch);
+            this.MaximumSize = new System.Drawing.Size(550, 342);
+            this.MinimumSize = new System.Drawing.Size(550, 342);
             this.Name = "Form1";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "ÖV-Verbindungen";
@@ -174,7 +164,6 @@
         private System.Windows.Forms.TextBox txtEndStation;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Button btnDeparture;
-        private System.Windows.Forms.Button btnMap;
         private System.Windows.Forms.ListView listViewConnection;
         private System.Windows.Forms.StatusStrip StatusBar;
         private System.Windows.Forms.ToolStripStatusLabel StatusBarLabel;
