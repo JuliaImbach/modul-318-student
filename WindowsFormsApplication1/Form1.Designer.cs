@@ -30,12 +30,16 @@
         {
             this.cmdSearch = new System.Windows.Forms.Button();
             this.txtStartStation = new System.Windows.Forms.TextBox();
-            this.lstBoxConnections = new System.Windows.Forms.ListBox();
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.txtEndStation = new System.Windows.Forms.TextBox();
             this.label3 = new System.Windows.Forms.Label();
             this.btnDeparture = new System.Windows.Forms.Button();
+            this.btnMap = new System.Windows.Forms.Button();
+            this.listViewConnection = new System.Windows.Forms.ListView();
+            this.StatusBar = new System.Windows.Forms.StatusStrip();
+            this.StatusBarLabel = new System.Windows.Forms.ToolStripStatusLabel();
+            this.StatusBar.SuspendLayout();
             this.SuspendLayout();
             // 
             // cmdSearch
@@ -55,14 +59,6 @@
             this.txtStartStation.Size = new System.Drawing.Size(335, 20);
             this.txtStartStation.TabIndex = 1;
             this.txtStartStation.KeyUp += new System.Windows.Forms.KeyEventHandler(this.StartStation_KeyUp);
-            // 
-            // lstBoxConnections
-            // 
-            this.lstBoxConnections.FormattingEnabled = true;
-            this.lstBoxConnections.Location = new System.Drawing.Point(12, 137);
-            this.lstBoxConnections.Name = "lstBoxConnections";
-            this.lstBoxConnections.Size = new System.Drawing.Size(335, 95);
-            this.lstBoxConnections.TabIndex = 5;
             // 
             // label1
             // 
@@ -101,7 +97,7 @@
             // 
             // btnDeparture
             // 
-            this.btnDeparture.Location = new System.Drawing.Point(372, 74);
+            this.btnDeparture.Location = new System.Drawing.Point(453, 30);
             this.btnDeparture.Name = "btnDeparture";
             this.btnDeparture.Size = new System.Drawing.Size(75, 23);
             this.btnDeparture.TabIndex = 4;
@@ -109,21 +105,61 @@
             this.btnDeparture.UseVisualStyleBackColor = true;
             this.btnDeparture.Click += new System.EventHandler(this.btnStationBoard_Click);
             // 
+            // btnMap
+            // 
+            this.btnMap.Location = new System.Drawing.Point(372, 73);
+            this.btnMap.Name = "btnMap";
+            this.btnMap.Size = new System.Drawing.Size(75, 23);
+            this.btnMap.TabIndex = 7;
+            this.btnMap.Text = "Map";
+            this.btnMap.UseVisualStyleBackColor = true;
+            this.btnMap.Click += new System.EventHandler(this.btnMap_Click);
+            // 
+            // listViewConnection
+            // 
+            this.listViewConnection.Location = new System.Drawing.Point(13, 145);
+            this.listViewConnection.Name = "listViewConnection";
+            this.listViewConnection.Size = new System.Drawing.Size(516, 140);
+            this.listViewConnection.TabIndex = 8;
+            this.listViewConnection.UseCompatibleStateImageBehavior = false;
+            this.listViewConnection.View = System.Windows.Forms.View.Details;
+            // 
+            // StatusBar
+            // 
+            this.StatusBar.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.StatusBarLabel});
+            this.StatusBar.Location = new System.Drawing.Point(0, 293);
+            this.StatusBar.Name = "StatusBar";
+            this.StatusBar.Size = new System.Drawing.Size(542, 22);
+            this.StatusBar.TabIndex = 9;
+            this.StatusBar.Text = "statusStrip1";
+            // 
+            // StatusBarLabel
+            // 
+            this.StatusBarLabel.Name = "StatusBarLabel";
+            this.StatusBarLabel.Size = new System.Drawing.Size(0, 17);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(484, 274);
+            this.ClientSize = new System.Drawing.Size(542, 315);
+            this.Controls.Add(this.StatusBar);
+            this.Controls.Add(this.listViewConnection);
+            this.Controls.Add(this.btnMap);
             this.Controls.Add(this.btnDeparture);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.txtEndStation);
             this.Controls.Add(this.label1);
-            this.Controls.Add(this.lstBoxConnections);
             this.Controls.Add(this.txtStartStation);
             this.Controls.Add(this.cmdSearch);
             this.Name = "Form1";
-            this.Text = "Form1";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
+            this.Text = "ÖV-Verbindungen";
+            this.Load += new System.EventHandler(this.FormLoad);
+            this.StatusBar.ResumeLayout(false);
+            this.StatusBar.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -133,12 +169,15 @@
 
         private System.Windows.Forms.Button cmdSearch;
         private System.Windows.Forms.TextBox txtStartStation;
-        private System.Windows.Forms.ListBox lstBoxConnections;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.TextBox txtEndStation;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Button btnDeparture;
+        private System.Windows.Forms.Button btnMap;
+        private System.Windows.Forms.ListView listViewConnection;
+        private System.Windows.Forms.StatusStrip StatusBar;
+        private System.Windows.Forms.ToolStripStatusLabel StatusBarLabel;
     }
 }
 
