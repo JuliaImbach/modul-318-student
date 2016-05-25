@@ -52,7 +52,7 @@
             // 
             this.txtAbsender.Location = new System.Drawing.Point(16, 30);
             this.txtAbsender.Name = "txtAbsender";
-            this.txtAbsender.Size = new System.Drawing.Size(100, 20);
+            this.txtAbsender.Size = new System.Drawing.Size(150, 20);
             this.txtAbsender.TabIndex = 1;
             // 
             // label2
@@ -68,7 +68,7 @@
             // 
             this.txtEmpfaenger.Location = new System.Drawing.Point(16, 73);
             this.txtEmpfaenger.Name = "txtEmpfaenger";
-            this.txtEmpfaenger.Size = new System.Drawing.Size(100, 20);
+            this.txtEmpfaenger.Size = new System.Drawing.Size(150, 20);
             this.txtEmpfaenger.TabIndex = 3;
             // 
             // label3
@@ -84,7 +84,7 @@
             // 
             this.txtBetreff.Location = new System.Drawing.Point(16, 117);
             this.txtBetreff.Name = "txtBetreff";
-            this.txtBetreff.Size = new System.Drawing.Size(100, 20);
+            this.txtBetreff.Size = new System.Drawing.Size(150, 20);
             this.txtBetreff.TabIndex = 5;
             // 
             // label4
@@ -128,7 +128,10 @@
             this.Controls.Add(this.label2);
             this.Controls.Add(this.txtAbsender);
             this.Controls.Add(this.label1);
+            this.MaximumSize = new System.Drawing.Size(300, 323);
+            this.MinimumSize = new System.Drawing.Size(300, 323);
             this.Name = "Mail";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Mail";
             this.ResumeLayout(false);
             this.PerformLayout();
