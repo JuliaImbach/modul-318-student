@@ -18,6 +18,13 @@ namespace SwissTransportTimetable
             InitializeComponent();
         }
 
+        /// <summary>
+        ///  Beim Klick auf den Button "Suchen" werden die Verbindungen
+        ///  zwischen Startstation und Endstation gesucht und in der
+        ///  ListView aufgelistet.
+        /// </summary>
+        /// <param name="sender">Sender</param>
+        /// <param name="e">Click-Event</param>
         private void cmdSearch_Click(object sender, EventArgs e)
         {
             try
@@ -112,6 +119,12 @@ namespace SwissTransportTimetable
             Cursor = Cursors.Default;
         }
 
+        /// <summary>
+        ///  Während des Schreibens in der Textbox "Startstation"
+        ///  wird das AutoComplete für die Stationen geladen
+        /// </summary>
+        /// /// <param name="sender">Sender</param>
+        /// <param name="e">KeyUp-Event</param>
         private void StartStation_KeyUp(object sender, KeyEventArgs e)
         {
             //Autocomplete hinzufügen
@@ -125,6 +138,12 @@ namespace SwissTransportTimetable
             }
         }
 
+        /// <summary>
+        ///  Während des Schreibens in der Textbox "Endstation"
+        ///  wird das AutoComplete für die Stationen geladen
+        /// </summary>
+        /// <param name="sender">Sender</param>
+        /// <param name="e">KeyUp-Event</param>
         private void EndStation_KeyUp(object sender, KeyEventArgs e)
         {
             Console.WriteLine(e.KeyCode.ToString());
@@ -140,6 +159,12 @@ namespace SwissTransportTimetable
             }
         }
 
+        /// <summary>
+        ///  Die Funktion überprüft, ob die eigegebene Station
+        ///  exisitiert.
+        /// </summary>
+        /// <param name="station">Stationsname</param>
+        /// <returns>string: Vollständiger Stationsname</returns>
         public string SearchStation(string station)
         {
             //Station auslesen
@@ -148,6 +173,12 @@ namespace SwissTransportTimetable
             return transportStation != null ? transportStation.StationList[0].Name.ToString() : null;
         }
 
+        /// <summary>
+        ///  Es werden alle Statationen die mit dem Parameter
+        ///  beginnen ausgelsen und als Source zurückgegeben.
+        /// </summary>
+        /// <param name="station">Stationsname</param>
+        /// <returns>AutoCompleteStringCollection: Source mit Stationen für AutoComplete</returns>
         public AutoCompleteStringCollection Autocomplete(string station)
         {
             //Liste mit allen Station in eine Liste laden
@@ -163,6 +194,13 @@ namespace SwissTransportTimetable
             return source;
         }
 
+        /// <summary>
+        ///  Es werden alle Verbindungen zwischen fromStation
+        ///  und toStation ausgelesen und als Liste zurückgegeben.
+        /// </summary>
+        /// <param name="fromStation">Stationsname Startstation</param>
+        /// <param name="endStation">Stationsname Endstation</param>
+        /// <returns>Connection-List: Liste mit Verbindungen</returns>
         private List<Connection> SearchConnection(string fromStation, string toStation)
         {
             //Verbindungen auslesen
@@ -170,6 +208,12 @@ namespace SwissTransportTimetable
             return transport.GetConnections(fromStation, toStation).ConnectionList;
         }
 
+        /// <summary>
+        ///  Mit dem Buttonklick "Abfahrtstafel" werden alle möglichen
+        ///  Verbindungen geladen und in der ListView angezeigt.
+        /// </summary>
+        /// <param name="sender">Sender</param>
+        /// <param name="e">Click-Event</param>
         private void btnStationBoard_Click(object sender, EventArgs e)
         {
             try
@@ -233,19 +277,34 @@ namespace SwissTransportTimetable
             Cursor = Cursors.Default;
         }
 
-        private List<StationBoard> SearchStationBoard(string fromStation)
+        /// <summary>
+        ///  Die Funktion lädt alle Abfahrtszeiten und Endstationen.
+        /// </summary>
+        /// <param name="station">Stationsname</param>
+        /// <returns>StationBoard-List: Liste mit Abfahrtszeiten</returns>
+        private List<StationBoard> SearchStationBoard(string station)
         {
 
             //Abfahrsplan auslesen
             Transport transport = new Transport();
-            return transport.GetStationBoard(fromStation, transport.GetStations(fromStation).StationList[0].Id).Entries;
+            return transport.GetStationBoard(station, transport.GetStations(station).StationList[0].Id).Entries;
         }
 
+        /// <summary>
+        ///  Mit einem Klick auf den Button "Map" wird GoogleMaps
+        ///  mit der Endstation geladen.
+        /// </summary>
+        /// <param name="sender">Sender</param>
+        /// <param name="e">Click-Event</param>
         private void btnMap_Click(object sender, EventArgs e)
         {
             string toStation = txtEndStation.Text;
         }
 
+        /// <summary>
+        ///  GoogelMaps Karte laden.
+        /// </summary>
+        /// <param name="station">Stationsname</param>
         private void OpenGoogleMaps(string station)
         {
             Transport transport = new Transport();
@@ -254,6 +313,9 @@ namespace SwissTransportTimetable
             var CorY = stationCor.Coordinate.YCoordinate;
         }
 
+        /// <summary>
+        ///  
+        /// </summary>
         private void FormLoad(object sender, EventArgs e)
         {
 
