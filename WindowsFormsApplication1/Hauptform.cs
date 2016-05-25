@@ -11,9 +11,9 @@ using System.Windows.Forms;
 
 namespace SwissTransportTimetable
 {
-    public partial class Form1 : Form
+    public partial class Hauptform : Form
     {
-        public Form1()
+        public Hauptform()
         {
             InitializeComponent();
         }
@@ -84,6 +84,7 @@ namespace SwissTransportTimetable
                 //Stationen auslesen und validieren
                 bool isValid = true;
                 string startStation = txtStartStation.Text;
+                string endStation = txtEndStation.Text;
                 if (!string.IsNullOrEmpty(startStation))
                 {
                     var foundEndStation = Task.Factory.StartNew(() => SearchStation(startStation));
@@ -91,22 +92,25 @@ namespace SwissTransportTimetable
                     {
                         isValid = false;
                         MessageBox.Show("Die Startstation ist ungültig.");
+                        
                     }
                 }
 
-                string endStation = txtEndStation.Text;
-                if (!string.IsNullOrEmpty(endStation))
+                if (isValid)
                 {
-                    var foundEndStation = Task.Factory.StartNew(() => SearchStation(endStation));
-                    if (foundEndStation.Result != endStation)
+                    if (!string.IsNullOrEmpty(endStation))
                     {
-                        isValid = false;
-                        MessageBox.Show("Die Endstation ist ungültig.");
+                        var foundEndStation = Task.Factory.StartNew(() => SearchStation(endStation));
+                        if (foundEndStation.Result != endStation)
+                        {
+                            isValid = false;
+                            MessageBox.Show("Die Endstation ist ungültig.");
+                        }
                     }
-                }
-                else
-                {
-                    MessageBox.Show("Sie müssen eine Endstation angeben.");
+                    else
+                    {
+                        MessageBox.Show("Sie müssen eine Endstation angeben.");
+                    }
                 }
 
                 if (isValid)
@@ -302,6 +306,28 @@ namespace SwissTransportTimetable
             //Abfahrsplan auslesen
             Transport transport = new Transport();
             return transport.GetStationBoard(station, transport.GetStations(station).StationList[0].Id).Entries;
+        }
+
+        /// <summary>
+        ///  Es wird die Form Mail für den Mailversand geöffnet
+        /// </summary>
+        /// <param name="sender">Sender</param>
+        /// <param name="e">Click-Event</param>
+        private void btnMail_Click(object sender, EventArgs e)
+        {
+            string nachricht = "";
+            for (int zeile = 0; zeile < listViewConnection.Items.Count; zeile++)
+            {
+                for (int spalte = 0; spalte < listViewConnection.Columns.Count; spalte++)
+                {
+                    nachricht += listViewConnection.Items[zeile].SubItems[spalte].ToString() + "\t";
+                }
+
+                nachricht += "\n";
+            }
+
+            Mail mail = new Mail(nachricht);
+            mail.ShowDialog();
         }
     }
 }
