@@ -117,7 +117,9 @@
             // 
             // listViewConnection
             // 
+            this.listViewConnection.FullRowSelect = true;
             this.listViewConnection.Location = new System.Drawing.Point(13, 160);
+            this.listViewConnection.MultiSelect = false;
             this.listViewConnection.Name = "listViewConnection";
             this.listViewConnection.Size = new System.Drawing.Size(516, 140);
             this.listViewConnection.TabIndex = 8;
@@ -151,7 +153,7 @@
             // 
             // dateConnection
             // 
-            this.dateConnection.CustomFormat = "dd.MM.yyyy hh:mm";
+            this.dateConnection.CustomFormat = "dd.MM.yyyy HH:mm";
             this.dateConnection.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
             this.dateConnection.Location = new System.Drawing.Point(367, 30);
             this.dateConnection.Name = "dateConnection";

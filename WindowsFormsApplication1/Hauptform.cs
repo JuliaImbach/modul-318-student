@@ -1,14 +1,8 @@
 ﻿using SwissTransport;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using System.Web;
 using System.Diagnostics;
 
 namespace SwissTransportTimetable
@@ -245,6 +239,8 @@ namespace SwissTransportTimetable
 
         /// <summary>
         ///  Es wird die Form Mail für den Mailversand geöffnet
+        ///  und der Nachrichtentext mit der gewählten Verbindung
+        ///  zusammengesetzt.
         /// </summary>
         /// <param name="sender">Sender</param>
         /// <param name="e">Click-Event</param>
@@ -252,30 +248,37 @@ namespace SwissTransportTimetable
         {
             string nachricht = "";
             bool head = true;
-            for (int zeile = 0; zeile < listViewConnection.Items.Count; zeile++)
-            {
-                for (int spalte = 0; spalte < listViewConnection.Columns.Count; spalte++)
-                {
-                    //Spaltenkopf
-                    if (head)
-                    {
-                        nachricht += listViewConnection.Columns[spalte].Text + "\t";
-                    }
-                    else
-                    {
-                        nachricht += listViewConnection.Items[zeile].SubItems[spalte].Text + "\t";
-                    }
-                }
-                if (head)
-                {
-                    zeile--;
-                    head = false;
-                }
-                nachricht += "\n";
-            }
 
-            Mail mail = new Mail(nachricht);
-            mail.ShowDialog();
+            if (listViewConnection.SelectedItems.Count > 0)
+            {
+                var index = listViewConnection.SelectedIndices[0];
+                do
+                {
+                    for (int spalte = 0; spalte < listViewConnection.Columns.Count; spalte++)
+                    {
+                        //Spaltenkopf
+                        if (head)
+                        {
+                            nachricht += listViewConnection.Columns[spalte].Text + "\t";
+                        }
+                        else
+                        {
+                            nachricht += listViewConnection.Items[index].SubItems[spalte].Text + "\t";
+                        }
+                    }
+
+                    head = head ? false : true;
+                    nachricht += "\n";
+                } while (!head);
+
+                Mail mail = new Mail(nachricht);
+                mail.ShowDialog();
+
+            }
+            else
+            {
+                MessageBox.Show("Sie müssen zuerst eine Verbindung wählen.");
+            }
         }
 
         /// <summary>
