@@ -41,16 +41,18 @@
             this.btnMail = new System.Windows.Forms.Button();
             this.mapsStartStation = new System.Windows.Forms.Label();
             this.mapsEndStation = new System.Windows.Forms.Label();
+            this.dateConnection = new System.Windows.Forms.DateTimePicker();
+            this.chbAnkunft = new System.Windows.Forms.CheckBox();
             this.StatusBar.SuspendLayout();
             this.SuspendLayout();
             // 
             // cmdSearch
             // 
-            this.cmdSearch.Location = new System.Drawing.Point(372, 30);
+            this.cmdSearch.Location = new System.Drawing.Point(236, 110);
             this.cmdSearch.Name = "cmdSearch";
-            this.cmdSearch.Size = new System.Drawing.Size(75, 23);
+            this.cmdSearch.Size = new System.Drawing.Size(93, 36);
             this.cmdSearch.TabIndex = 3;
-            this.cmdSearch.Text = "Suchen";
+            this.cmdSearch.Text = "Verbindungen Suchen";
             this.cmdSearch.UseVisualStyleBackColor = true;
             this.cmdSearch.Click += new System.EventHandler(this.cmdSearch_Click);
             // 
@@ -97,7 +99,7 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(13, 118);
+            this.label3.Location = new System.Drawing.Point(13, 133);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(73, 13);
             this.label3.TabIndex = 6;
@@ -105,7 +107,7 @@
             // 
             // btnDeparture
             // 
-            this.btnDeparture.Location = new System.Drawing.Point(372, 71);
+            this.btnDeparture.Location = new System.Drawing.Point(502, 30);
             this.btnDeparture.Name = "btnDeparture";
             this.btnDeparture.Size = new System.Drawing.Size(75, 23);
             this.btnDeparture.TabIndex = 4;
@@ -115,7 +117,7 @@
             // 
             // listViewConnection
             // 
-            this.listViewConnection.Location = new System.Drawing.Point(13, 145);
+            this.listViewConnection.Location = new System.Drawing.Point(13, 160);
             this.listViewConnection.Name = "listViewConnection";
             this.listViewConnection.Size = new System.Drawing.Size(516, 140);
             this.listViewConnection.TabIndex = 8;
@@ -126,9 +128,9 @@
             // 
             this.StatusBar.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.StatusBarLabel});
-            this.StatusBar.Location = new System.Drawing.Point(0, 293);
+            this.StatusBar.Location = new System.Drawing.Point(0, 311);
             this.StatusBar.Name = "StatusBar";
-            this.StatusBar.Size = new System.Drawing.Size(589, 22);
+            this.StatusBar.Size = new System.Drawing.Size(596, 22);
             this.StatusBar.TabIndex = 9;
             this.StatusBar.Text = "statusStrip1";
             // 
@@ -139,7 +141,7 @@
             // 
             // btnMail
             // 
-            this.btnMail.Location = new System.Drawing.Point(536, 145);
+            this.btnMail.Location = new System.Drawing.Point(536, 160);
             this.btnMail.Name = "btnMail";
             this.btnMail.Size = new System.Drawing.Size(41, 23);
             this.btnMail.TabIndex = 10;
@@ -169,11 +171,34 @@
             this.mapsEndStation.Text = "maps";
             this.mapsEndStation.Click += new System.EventHandler(this.mapsEndStation_Click);
             // 
+            // dateConnection
+            // 
+            this.dateConnection.CustomFormat = "dd.MM.yyyy hh:mm";
+            this.dateConnection.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
+            this.dateConnection.Location = new System.Drawing.Point(367, 30);
+            this.dateConnection.Name = "dateConnection";
+            this.dateConnection.Size = new System.Drawing.Size(114, 20);
+            this.dateConnection.TabIndex = 13;
+            // 
+            // chbAnkunft
+            // 
+            this.chbAnkunft.AutoSize = true;
+            this.chbAnkunft.Checked = true;
+            this.chbAnkunft.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.chbAnkunft.Location = new System.Drawing.Point(367, 57);
+            this.chbAnkunft.Name = "chbAnkunft";
+            this.chbAnkunft.Size = new System.Drawing.Size(84, 17);
+            this.chbAnkunft.TabIndex = 14;
+            this.chbAnkunft.Text = "Ankunftszeit";
+            this.chbAnkunft.UseVisualStyleBackColor = true;
+            // 
             // Hauptform
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(589, 315);
+            this.ClientSize = new System.Drawing.Size(596, 333);
+            this.Controls.Add(this.chbAnkunft);
+            this.Controls.Add(this.dateConnection);
             this.Controls.Add(this.mapsEndStation);
             this.Controls.Add(this.mapsStartStation);
             this.Controls.Add(this.btnMail);
@@ -186,12 +211,11 @@
             this.Controls.Add(this.label1);
             this.Controls.Add(this.txtStartStation);
             this.Controls.Add(this.cmdSearch);
-            this.MaximumSize = new System.Drawing.Size(700, 342);
+            this.MaximumSize = new System.Drawing.Size(750, 360);
             this.MinimumSize = new System.Drawing.Size(550, 342);
             this.Name = "Hauptform";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "ÖV-Verbindungen";
-            this.Load += new System.EventHandler(this.FormLoad);
             this.StatusBar.ResumeLayout(false);
             this.StatusBar.PerformLayout();
             this.ResumeLayout(false);
@@ -214,6 +238,8 @@
         private System.Windows.Forms.Button btnMail;
         private System.Windows.Forms.Label mapsStartStation;
         private System.Windows.Forms.Label mapsEndStation;
+        private System.Windows.Forms.DateTimePicker dateConnection;
+        private System.Windows.Forms.CheckBox chbAnkunft;
     }
 }
 

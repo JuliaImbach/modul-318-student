@@ -20,15 +20,6 @@ namespace SwissTransportTimetable
             InitializeComponent();
         }
 
-        //Windowsform-Events
-        /// <summary>
-        ///  
-        /// </summary>
-        private void FormLoad(object sender, EventArgs e)
-        {
-
-        }
-
         /// <summary>
         ///  Während des Schreibens in der Textbox "Startstation"
         ///  wird das AutoComplete für die Stationen geladen
@@ -119,9 +110,12 @@ namespace SwissTransportTimetable
                 if (isValid)
                 {
                     StatusBarLabel.Text = "Verbindungen werden geladen...";
+                    string date = Convert.ToDateTime(dateConnection.Text).ToString("yyyy-MM-dd");
+                    string time = Convert.ToDateTime(dateConnection.Text).ToShortTimeString();
+                    bool isArrival = chbAnkunft.Checked;
 
                     //Verbindungen auslesen
-                    var connections = SearchConnection(startStation, endStation);
+                    var connections = Task.Factory.StartNew(() => SearchConnectionDate(startStation, endStation, date, time, isArrival));
 
                     //ListView leeren
                     listViewConnection.Items.Clear();
@@ -136,9 +130,9 @@ namespace SwissTransportTimetable
                     listViewConnection.Columns.Add("zu Station", (listViewConnection.Width - 300) / 2);
                     listViewConnection.Columns.Add("Dauer", 100);
 
-                    if (connections.Count != 0)
+                    if (connections.Result.Count != 0)
                     {
-                        foreach (var connection in connections)
+                        foreach (var connection in connections.Result)
                         {
                             var duration = "";
 
@@ -299,7 +293,25 @@ namespace SwissTransportTimetable
             Transport transport = new Transport();
             return transport.GetConnections(fromStation, toStation).ConnectionList;
         }
-        
+
+        /// <summary>
+        ///  Es werden alle Verbindungen zwischen fromStation
+        ///  und toStation zu einem bestimmten Zeitpunkt ausgelesen 
+        ///  und als Liste zurückgegeben.
+        /// </summary>
+        /// <param name="fromStation">Stationsname Startstation</param>
+        /// <param name="endStation">Stationsname Endstation</param>
+        /// <param name="date">Datum der Verbindung</param>
+        /// <param name="time">Zeitpunkt der Verbindung</param>
+        /// <param name="isArrival">Unterscheidung Ankunfts und Abfahrtszeit</param>
+        /// <returns>Connection-List: Liste mit Verbindungen</returns>
+        private List<Connection> SearchConnectionDate(string fromStation, string toStation, string date, string time, bool isArrivalDate)
+        {
+            //Verbindungen auslesen
+            Transport transport = new Transport();
+            return transport.GetConnectionsDate(fromStation, toStation, date, time, (isArrivalDate ? "1" : "0")).ConnectionList;
+        }
+
         /// <summary>
         ///  Die Funktion lädt alle Abfahrtszeiten und Endstationen.
         /// </summary>
@@ -348,6 +360,12 @@ namespace SwissTransportTimetable
             mail.ShowDialog();
         }
 
+        /// <summary>
+        ///  Mit einem Click auf das Label "maps" wird der
+        ///  aktuelle Standort im Browser auf Googlemaps geöffnet.
+        /// </summary>
+        /// /// <param name="sender">Sender</param>
+        /// <param name="e">KeyUp-Event</param>
         private void mapsStartStation_Click(object sender, EventArgs e)
         {
             string stationName = txtStartStation.Text;
