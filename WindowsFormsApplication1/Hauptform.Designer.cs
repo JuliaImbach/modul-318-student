@@ -39,10 +39,10 @@
             this.StatusBar = new System.Windows.Forms.StatusStrip();
             this.StatusBarLabel = new System.Windows.Forms.ToolStripStatusLabel();
             this.btnMail = new System.Windows.Forms.Button();
-            this.mapsStartStation = new System.Windows.Forms.Label();
-            this.mapsEndStation = new System.Windows.Forms.Label();
             this.dateConnection = new System.Windows.Forms.DateTimePicker();
             this.chbAnkunft = new System.Windows.Forms.CheckBox();
+            this.mapsStartStation = new System.Windows.Forms.LinkLabel();
+            this.mapsEndStation = new System.Windows.Forms.LinkLabel();
             this.StatusBar.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -149,28 +149,6 @@
             this.btnMail.UseVisualStyleBackColor = true;
             this.btnMail.Click += new System.EventHandler(this.btnMail_Click);
             // 
-            // mapsStartStation
-            // 
-            this.mapsStartStation.AutoSize = true;
-            this.mapsStartStation.ForeColor = System.Drawing.SystemColors.HotTrack;
-            this.mapsStartStation.Location = new System.Drawing.Point(80, 13);
-            this.mapsStartStation.Name = "mapsStartStation";
-            this.mapsStartStation.Size = new System.Drawing.Size(32, 13);
-            this.mapsStartStation.TabIndex = 11;
-            this.mapsStartStation.Text = "maps";
-            this.mapsStartStation.Click += new System.EventHandler(this.mapsStartStation_Click);
-            // 
-            // mapsEndStation
-            // 
-            this.mapsEndStation.AutoSize = true;
-            this.mapsEndStation.ForeColor = System.Drawing.SystemColors.HotTrack;
-            this.mapsEndStation.Location = new System.Drawing.Point(80, 57);
-            this.mapsEndStation.Name = "mapsEndStation";
-            this.mapsEndStation.Size = new System.Drawing.Size(32, 13);
-            this.mapsEndStation.TabIndex = 12;
-            this.mapsEndStation.Text = "maps";
-            this.mapsEndStation.Click += new System.EventHandler(this.mapsEndStation_Click);
-            // 
             // dateConnection
             // 
             this.dateConnection.CustomFormat = "dd.MM.yyyy hh:mm";
@@ -192,15 +170,37 @@
             this.chbAnkunft.Text = "Ankunftszeit";
             this.chbAnkunft.UseVisualStyleBackColor = true;
             // 
+            // mapsStartStation
+            // 
+            this.mapsStartStation.AutoSize = true;
+            this.mapsStartStation.Location = new System.Drawing.Point(80, 13);
+            this.mapsStartStation.Name = "mapsStartStation";
+            this.mapsStartStation.Size = new System.Drawing.Size(32, 13);
+            this.mapsStartStation.TabIndex = 15;
+            this.mapsStartStation.TabStop = true;
+            this.mapsStartStation.Text = "maps";
+            this.mapsStartStation.Click += new System.EventHandler(this.mapsStartStation_Click);
+            // 
+            // mapsEndStation
+            // 
+            this.mapsEndStation.AutoSize = true;
+            this.mapsEndStation.Location = new System.Drawing.Point(80, 57);
+            this.mapsEndStation.Name = "mapsEndStation";
+            this.mapsEndStation.Size = new System.Drawing.Size(32, 13);
+            this.mapsEndStation.TabIndex = 16;
+            this.mapsEndStation.TabStop = true;
+            this.mapsEndStation.Text = "maps";
+            this.mapsEndStation.Click += new System.EventHandler(this.mapsEndStation_Click);
+            // 
             // Hauptform
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(596, 333);
-            this.Controls.Add(this.chbAnkunft);
-            this.Controls.Add(this.dateConnection);
             this.Controls.Add(this.mapsEndStation);
             this.Controls.Add(this.mapsStartStation);
+            this.Controls.Add(this.chbAnkunft);
+            this.Controls.Add(this.dateConnection);
             this.Controls.Add(this.btnMail);
             this.Controls.Add(this.StatusBar);
             this.Controls.Add(this.listViewConnection);
@@ -236,10 +236,10 @@
         private System.Windows.Forms.StatusStrip StatusBar;
         private System.Windows.Forms.ToolStripStatusLabel StatusBarLabel;
         private System.Windows.Forms.Button btnMail;
-        private System.Windows.Forms.Label mapsStartStation;
-        private System.Windows.Forms.Label mapsEndStation;
         private System.Windows.Forms.DateTimePicker dateConnection;
         private System.Windows.Forms.CheckBox chbAnkunft;
+        private System.Windows.Forms.LinkLabel mapsStartStation;
+        private System.Windows.Forms.LinkLabel mapsEndStation;
     }
 }
 

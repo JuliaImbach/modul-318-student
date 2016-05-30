@@ -17,12 +17,12 @@ namespace SwissTransportTimetable
         //Membervariabeln
         string m_Nachricht = "";
 
+        //Konstruktoren
         public Mail()
         {
             InitializeComponent();
         }
 
-        //Konstruktor
         public Mail(string nachricht)
         {
             InitializeComponent();
@@ -53,7 +53,7 @@ namespace SwissTransportTimetable
             {
                 sendMail(absender, empfaenger, betreff, nachricht + "\n" + this.Nachricht, "smtp.gmail.com", 587, txtPasswort.Text);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 MessageBox.Show("Mail konnte nicht gesendet werden: " + ex.Message);
             }

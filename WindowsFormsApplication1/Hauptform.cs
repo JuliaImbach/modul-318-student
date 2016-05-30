@@ -84,7 +84,6 @@ namespace SwissTransportTimetable
                         isValid = false;
                         Cursor = Cursors.Default;
                         MessageBox.Show("Die Startstation ist ungültig.");
-                        
                     }
                 }
 
@@ -245,6 +244,135 @@ namespace SwissTransportTimetable
         }
 
         /// <summary>
+        ///  Es wird die Form Mail für den Mailversand geöffnet
+        /// </summary>
+        /// <param name="sender">Sender</param>
+        /// <param name="e">Click-Event</param>
+        private void btnMail_Click(object sender, EventArgs e)
+        {
+            string nachricht = "";
+            bool head = true;
+            for (int zeile = 0; zeile < listViewConnection.Items.Count; zeile++)
+            {
+                for (int spalte = 0; spalte < listViewConnection.Columns.Count; spalte++)
+                {
+                    //Spaltenkopf
+                    if (head)
+                    {
+                        nachricht += listViewConnection.Columns[spalte].Text + "\t";
+                    }
+                    else
+                    {
+                        nachricht += listViewConnection.Items[zeile].SubItems[spalte].Text + "\t";
+                    }
+                }
+                if (head)
+                {
+                    zeile--;
+                    head = false;
+                }
+                nachricht += "\n";
+            }
+
+            Mail mail = new Mail(nachricht);
+            mail.ShowDialog();
+        }
+
+        /// <summary>
+        ///  Mit einem Click auf das Label "maps" wird der
+        ///  aktuelle Standort im Browser auf Googlemaps geöffnet.
+        /// </summary>
+        /// /// <param name="sender">Sender</param>
+        /// <param name="e">KeyUp-Event</param>
+        private void mapsStartStation_Click(object sender, EventArgs e)
+        {
+            string stationName = txtStartStation.Text;
+
+            if (!string.IsNullOrEmpty(stationName))
+            {
+                var foundEndStation = Task.Factory.StartNew(() => SearchStation(stationName));
+                if (foundEndStation.Result.Find(x => x.Name.Contains(stationName)) == null)
+                {
+                    MessageBox.Show("Die Startstation ist ungültig.");
+                }
+                else
+                {
+                    Station station = GetStation(stationName);
+
+                    StatusBarLabel.Text = "Karte wird geöffnet.";
+                    ShowGoogleMapsRoute(station.Coordinate.XCoordinate, station.Coordinate.YCoordinate);
+                }
+
+            }
+
+        }
+
+        /// <summary>
+        ///  Mit einem Click auf das Label "maps" wird der
+        ///  aktuelle Standort im Browser auf Googlemaps geöffnet.
+        /// </summary>
+        /// /// <param name="sender">Sender</param>
+        /// <param name="e">KeyUp-Event</param>
+        private void mapsEndStation_Click(object sender, EventArgs e)
+        {
+            string stationName = txtEndStation.Text;
+            if (!string.IsNullOrEmpty(stationName))
+            {
+                var foundEndStation = Task.Factory.StartNew(() => SearchStation(stationName));
+                if (foundEndStation.Result.Find(x => x.Name.Contains(stationName)) == null)
+                {
+                    MessageBox.Show("Die Endstation ist ungültig.");
+                }
+                else
+                {
+                    Station station = GetStation(stationName);
+
+                    StatusBarLabel.Text = "Karte wird geöffnet.";
+                    ShowGoogleMapsRoute(station.Coordinate.XCoordinate, station.Coordinate.YCoordinate);
+                }
+
+            }
+        }
+
+        /// <summary>
+        ///  Während des Schreibens in der Textbox "Startstation"
+        ///  wird das AutoComplete für die Stationen geladen
+        /// </summary>
+        /// /// <param name="sender">Sender</param>
+        /// <param name="e">KeyUp-Event</param>
+        private void startStation_TextChanged(object sender, EventArgs e)
+        {
+            //Autocomplete hinzufügen
+            string startStation = txtStartStation.Text;
+            if (startStation.Length == 3) //Nur bei Textlänge 3, sonst Überlastung
+            {
+                var source = Task.Factory.StartNew(() => Autocomplete(startStation));
+                txtStartStation.AutoCompleteCustomSource = source.Result;
+                txtStartStation.AutoCompleteMode = AutoCompleteMode.SuggestAppend;
+                txtStartStation.AutoCompleteSource = AutoCompleteSource.CustomSource;
+            }
+        }
+
+        /// <summary>
+        ///  Während des Schreibens in der Textbox "Endstation"
+        ///  wird das AutoComplete für die Stationen geladen
+        /// </summary>
+        /// <param name="sender">Sender</param>
+        /// <param name="e">KeyUp-Event</param>
+        private void endStation_TextChanged(object sender, EventArgs e)
+        {
+            //Autocomplete hinzufügen
+            string endStation = txtEndStation.Text;
+            if (endStation.Length == 3) //Nur bei Textlänge 3, sonst Überlastung         
+            {
+                var source = Task.Factory.StartNew(() => Autocomplete(endStation));
+                txtEndStation.AutoCompleteCustomSource = source.Result;
+                txtEndStation.AutoCompleteMode = AutoCompleteMode.SuggestAppend;
+                txtEndStation.AutoCompleteSource = AutoCompleteSource.CustomSource;
+            }
+        }
+
+        /// <summary>
         ///  Die Funktion überprüft, ob die eigegebene Station
         ///  exisitiert.
         /// </summary>
@@ -326,138 +454,25 @@ namespace SwissTransportTimetable
         }
 
         /// <summary>
-        ///  Es wird die Form Mail für den Mailversand geöffnet
+        ///  Öffnet Googlemaps im Browser
         /// </summary>
-        /// <param name="sender">Sender</param>
-        /// <param name="e">Click-Event</param>
-        private void btnMail_Click(object sender, EventArgs e)
-        {
-            string nachricht = "";
-            bool head = true;
-            for (int zeile = 0; zeile < listViewConnection.Items.Count; zeile++)
-            {
-                for (int spalte = 0; spalte < listViewConnection.Columns.Count; spalte++)
-                {
-                    //Spaltenkopf
-                    if (head)
-                    {
-                        nachricht += listViewConnection.Columns[spalte].Text + "\t";
-                    }
-                    else
-                    {
-                        nachricht += listViewConnection.Items[zeile].SubItems[spalte].Text + "\t";
-                    }
-                }
-                if(head)
-                {
-                    zeile--;
-                    head = false;
-                }
-                nachricht += "\n";
-            }
-
-            Mail mail = new Mail(nachricht);
-            mail.ShowDialog();
-        }
-
-        /// <summary>
-        ///  Mit einem Click auf das Label "maps" wird der
-        ///  aktuelle Standort im Browser auf Googlemaps geöffnet.
-        /// </summary>
-        /// /// <param name="sender">Sender</param>
-        /// <param name="e">KeyUp-Event</param>
-        private void mapsStartStation_Click(object sender, EventArgs e)
-        {
-            string stationName = txtStartStation.Text;
-
-            if (!string.IsNullOrEmpty(stationName))
-            {
-                var foundEndStation = Task.Factory.StartNew(() => SearchStation(stationName));
-                if (foundEndStation.Result.Find(x => x.Name.Contains(stationName)) == null)
-                {
-                    MessageBox.Show("Die Startstation ist ungültig.");
-                }
-                else
-                {
-                    Station station = GetKoordinaten(stationName);
-
-                    StatusBarLabel.Text = "Karte wird geöffnet.";
-                    ShowGoogleMapsRoute(station.Coordinate.XCoordinate, station.Coordinate.YCoordinate);
-                }
-                
-            }
-
-        }
-
+        ///  <param name="xKoordinate">X-Koordinate der Station</param>
+        /// <param name="yKoordinate">Y-Koordinate der Station</param>
         public static void ShowGoogleMapsRoute(double xKoordinate, double yKoordinate)
         {
             Process.Start(String.Format("http://maps.google.de/maps?q={0},{1}", xKoordinate, yKoordinate));
         }
 
-        public Station GetKoordinaten(string stationName)
+        /// <summary>
+        ///  List das Stationobjekt zu einem Stationsname aus.
+        /// </summary>
+        ///  <param name="stationName">Stationsname</param>
+        ///  <returns>Station: Station</returns>
+        public Station GetStation(string stationName)
         {
             Transport transport = new Transport();
             var transportStation = transport.GetStations(stationName).StationList[0];
             return transportStation;
-        }
-
-        private void mapsEndStation_Click(object sender, EventArgs e)
-        {
-            string stationName = txtEndStation.Text;
-            if (!string.IsNullOrEmpty(stationName))
-            {
-                var foundEndStation = Task.Factory.StartNew(() => SearchStation(stationName));
-                if (foundEndStation.Result.Find(x => x.Name.Contains(stationName)) == null)
-                {
-                    MessageBox.Show("Die Endstation ist ungültig.");
-                }
-                else
-                {
-                    Station station = GetKoordinaten(stationName);
-
-                    StatusBarLabel.Text = "Karte wird geöffnet.";
-                    ShowGoogleMapsRoute(station.Coordinate.XCoordinate, station.Coordinate.YCoordinate);
-                }
-
-            }
-        }
-
-        /// <summary>
-        ///  Während des Schreibens in der Textbox "Startstation"
-        ///  wird das AutoComplete für die Stationen geladen
-        /// </summary>
-        /// /// <param name="sender">Sender</param>
-        /// <param name="e">KeyUp-Event</param>
-        private void startStation_TextChanged(object sender, EventArgs e)
-        {
-            //Autocomplete hinzufügen
-            string startStation = txtStartStation.Text;
-            if (startStation.Length == 3) //Nur bei Textlänge 3, sonst Überlastung
-            {
-                var source = Task.Factory.StartNew(() => Autocomplete(startStation));
-                txtStartStation.AutoCompleteCustomSource = source.Result;
-                txtStartStation.AutoCompleteMode = AutoCompleteMode.SuggestAppend;
-                txtStartStation.AutoCompleteSource = AutoCompleteSource.CustomSource;
-            }
-        }
-
-        /// <summary>
-        ///  Während des Schreibens in der Textbox "Endstation"
-        ///  wird das AutoComplete für die Stationen geladen
-        /// </summary>
-        /// <param name="sender">Sender</param>
-        /// <param name="e">KeyUp-Event</param>
-        private void endStation_TextChanged(object sender, EventArgs e)
-        {
-            //Autocomplete hinzufügen
-            string endStation = txtEndStation.Text;
-            if (endStation.Length == 3) //Nur bei Textlänge 3, sonst Überlastung         
-            {
-                var source = Task.Factory.StartNew(() => Autocomplete(endStation));
-                txtEndStation.AutoCompleteCustomSource = source.Result;
-                txtEndStation.AutoCompleteMode = AutoCompleteMode.SuggestAppend;
-                txtEndStation.AutoCompleteSource = AutoCompleteSource.CustomSource;
-            }
         }
     }
 }
