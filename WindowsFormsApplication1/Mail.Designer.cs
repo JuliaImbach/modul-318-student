@@ -37,6 +37,8 @@
             this.label4 = new System.Windows.Forms.Label();
             this.rtxtNachricht = new System.Windows.Forms.RichTextBox();
             this.btnSend = new System.Windows.Forms.Button();
+            this.txtPasswort = new System.Windows.Forms.TextBox();
+            this.label5 = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // label1
@@ -58,7 +60,7 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(16, 57);
+            this.label2.Location = new System.Drawing.Point(16, 96);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(58, 13);
             this.label2.TabIndex = 2;
@@ -66,7 +68,7 @@
             // 
             // txtEmpfaenger
             // 
-            this.txtEmpfaenger.Location = new System.Drawing.Point(16, 73);
+            this.txtEmpfaenger.Location = new System.Drawing.Point(16, 112);
             this.txtEmpfaenger.Name = "txtEmpfaenger";
             this.txtEmpfaenger.Size = new System.Drawing.Size(150, 20);
             this.txtEmpfaenger.TabIndex = 3;
@@ -74,7 +76,7 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(16, 100);
+            this.label3.Location = new System.Drawing.Point(16, 139);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(38, 13);
             this.label3.TabIndex = 4;
@@ -82,15 +84,15 @@
             // 
             // txtBetreff
             // 
-            this.txtBetreff.Location = new System.Drawing.Point(16, 117);
+            this.txtBetreff.Location = new System.Drawing.Point(16, 156);
             this.txtBetreff.Name = "txtBetreff";
             this.txtBetreff.Size = new System.Drawing.Size(150, 20);
-            this.txtBetreff.TabIndex = 5;
+            this.txtBetreff.TabIndex = 4;
             // 
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(16, 144);
+            this.label4.Location = new System.Drawing.Point(16, 183);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(53, 13);
             this.label4.TabIndex = 6;
@@ -98,27 +100,46 @@
             // 
             // rtxtNachricht
             // 
-            this.rtxtNachricht.Location = new System.Drawing.Point(16, 165);
+            this.rtxtNachricht.Location = new System.Drawing.Point(16, 204);
             this.rtxtNachricht.Name = "rtxtNachricht";
             this.rtxtNachricht.Size = new System.Drawing.Size(264, 96);
-            this.rtxtNachricht.TabIndex = 8;
+            this.rtxtNachricht.TabIndex = 5;
             this.rtxtNachricht.Text = "";
             // 
             // btnSend
             // 
-            this.btnSend.Location = new System.Drawing.Point(16, 267);
+            this.btnSend.Location = new System.Drawing.Point(16, 306);
             this.btnSend.Name = "btnSend";
             this.btnSend.Size = new System.Drawing.Size(75, 23);
-            this.btnSend.TabIndex = 9;
+            this.btnSend.TabIndex = 6;
             this.btnSend.Text = "Senden";
             this.btnSend.UseVisualStyleBackColor = true;
             this.btnSend.Click += new System.EventHandler(this.btnSend_Click);
+            // 
+            // txtPasswort
+            // 
+            this.txtPasswort.Location = new System.Drawing.Point(16, 73);
+            this.txtPasswort.Name = "txtPasswort";
+            this.txtPasswort.Size = new System.Drawing.Size(150, 20);
+            this.txtPasswort.TabIndex = 2;
+            this.txtPasswort.UseSystemPasswordChar = true;
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(13, 56);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(50, 13);
+            this.label5.TabIndex = 10;
+            this.label5.Text = "Passwort";
             // 
             // Mail
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(292, 296);
+            this.ClientSize = new System.Drawing.Size(292, 336);
+            this.Controls.Add(this.txtPasswort);
+            this.Controls.Add(this.label5);
             this.Controls.Add(this.btnSend);
             this.Controls.Add(this.rtxtNachricht);
             this.Controls.Add(this.label4);
@@ -128,7 +149,7 @@
             this.Controls.Add(this.label2);
             this.Controls.Add(this.txtAbsender);
             this.Controls.Add(this.label1);
-            this.MaximumSize = new System.Drawing.Size(300, 323);
+            this.MaximumSize = new System.Drawing.Size(300, 363);
             this.MinimumSize = new System.Drawing.Size(300, 323);
             this.Name = "Mail";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
@@ -149,5 +170,7 @@
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.RichTextBox rtxtNachricht;
         private System.Windows.Forms.Button btnSend;
+        private System.Windows.Forms.TextBox txtPasswort;
+        private System.Windows.Forms.Label label5;
     }
 }

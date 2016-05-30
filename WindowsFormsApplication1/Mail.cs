@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Net.Mail;
+using System.Net;
 
 namespace SwissTransportTimetable
 {
@@ -50,8 +51,7 @@ namespace SwissTransportTimetable
 
             try
             {
-                string das = nachricht + "<BR>" + this.Nachricht;
-                sendMail(absender, empfaenger, betreff, nachricht + "<BR>" + this.Nachricht, "smtp.gmail.com", 465);
+                sendMail(absender, empfaenger, betreff, nachricht + "\n" + this.Nachricht, "smtp.gmail.com", 587, txtPasswort.Text);
             }
             catch(Exception ex)
             {
@@ -73,7 +73,7 @@ namespace SwissTransportTimetable
         /// <param name="user">Benutzername</param>
         /// <param name="passwort">Passwort</param>
         /// <returns>StationBoard-List: Liste mit Abfahrtszeiten</returns>
-        public void sendMail(string absender, string empfaenger, string betreff, string nachricht, string server, int port)
+        public void sendMail(string absender, string empfaenger, string betreff, string nachricht, string server, int port, string passwort)
         {
             MailMessage Email = new MailMessage();
 
@@ -91,6 +91,9 @@ namespace SwissTransportTimetable
 
             //Ausgangsserver initialisieren
             SmtpClient MailClient = new SmtpClient(server, port);
+            MailClient.EnableSsl = true;
+            MailClient.Credentials = new NetworkCredential(absender, passwort);
+
 
             //Email absenden
             MailClient.Send(Email);

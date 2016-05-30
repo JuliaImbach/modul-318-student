@@ -39,6 +39,8 @@
             this.StatusBar = new System.Windows.Forms.StatusStrip();
             this.StatusBarLabel = new System.Windows.Forms.ToolStripStatusLabel();
             this.btnMail = new System.Windows.Forms.Button();
+            this.mapsStartStation = new System.Windows.Forms.Label();
+            this.mapsEndStation = new System.Windows.Forms.Label();
             this.StatusBar.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -54,10 +56,15 @@
             // 
             // txtStartStation
             // 
+            this.txtStartStation.AutoCompleteCustomSource.AddRange(new string[] {
+            "Hall",
+            "Zürhc"});
+            this.txtStartStation.HideSelection = false;
             this.txtStartStation.Location = new System.Drawing.Point(13, 30);
             this.txtStartStation.Name = "txtStartStation";
             this.txtStartStation.Size = new System.Drawing.Size(335, 20);
             this.txtStartStation.TabIndex = 1;
+            this.txtStartStation.TextChanged += new System.EventHandler(this.startStation_TextChanged);
             this.txtStartStation.KeyUp += new System.Windows.Forms.KeyEventHandler(this.StartStation_KeyUp);
             // 
             // label1
@@ -84,6 +91,7 @@
             this.txtEndStation.Name = "txtEndStation";
             this.txtEndStation.Size = new System.Drawing.Size(335, 20);
             this.txtEndStation.TabIndex = 2;
+            this.txtEndStation.TextChanged += new System.EventHandler(this.endStation_TextChanged);
             this.txtEndStation.KeyUp += new System.Windows.Forms.KeyEventHandler(this.EndStation_KeyUp);
             // 
             // label3
@@ -139,11 +147,35 @@
             this.btnMail.UseVisualStyleBackColor = true;
             this.btnMail.Click += new System.EventHandler(this.btnMail_Click);
             // 
+            // mapsStartStation
+            // 
+            this.mapsStartStation.AutoSize = true;
+            this.mapsStartStation.ForeColor = System.Drawing.SystemColors.HotTrack;
+            this.mapsStartStation.Location = new System.Drawing.Point(80, 13);
+            this.mapsStartStation.Name = "mapsStartStation";
+            this.mapsStartStation.Size = new System.Drawing.Size(32, 13);
+            this.mapsStartStation.TabIndex = 11;
+            this.mapsStartStation.Text = "maps";
+            this.mapsStartStation.Click += new System.EventHandler(this.mapsStartStation_Click);
+            // 
+            // mapsEndStation
+            // 
+            this.mapsEndStation.AutoSize = true;
+            this.mapsEndStation.ForeColor = System.Drawing.SystemColors.HotTrack;
+            this.mapsEndStation.Location = new System.Drawing.Point(80, 57);
+            this.mapsEndStation.Name = "mapsEndStation";
+            this.mapsEndStation.Size = new System.Drawing.Size(32, 13);
+            this.mapsEndStation.TabIndex = 12;
+            this.mapsEndStation.Text = "maps";
+            this.mapsEndStation.Click += new System.EventHandler(this.mapsEndStation_Click);
+            // 
             // Hauptform
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(589, 315);
+            this.Controls.Add(this.mapsEndStation);
+            this.Controls.Add(this.mapsStartStation);
             this.Controls.Add(this.btnMail);
             this.Controls.Add(this.StatusBar);
             this.Controls.Add(this.listViewConnection);
@@ -180,6 +212,8 @@
         private System.Windows.Forms.StatusStrip StatusBar;
         private System.Windows.Forms.ToolStripStatusLabel StatusBarLabel;
         private System.Windows.Forms.Button btnMail;
+        private System.Windows.Forms.Label mapsStartStation;
+        private System.Windows.Forms.Label mapsEndStation;
     }
 }
 

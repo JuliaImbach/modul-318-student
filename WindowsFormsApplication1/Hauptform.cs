@@ -8,6 +8,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Web;
+using System.Diagnostics;
 
 namespace SwissTransportTimetable
 {
@@ -36,14 +38,14 @@ namespace SwissTransportTimetable
         private void StartStation_KeyUp(object sender, KeyEventArgs e)
         {
             //Autocomplete hinzufügen
-            string startStation = txtStartStation.Text;
-            if (e.KeyCode.ToString() != "Back" && e.KeyCode.ToString() != "Delete" && startStation.Length == 3) //Nur bei Textlänge 3, sonst Überlastung
+            /*string startStation = txtStartStation.Text;
+            if (e.KeyCode.ToString() != "Back" && e.KeyCode.ToString() != "Delete" && e.KeyCode.ToString() != "Up" && e.KeyCode.ToString() != "Down" && startStation.Length == 3) //Nur bei Textlänge 3, sonst Überlastung
             {
                 var source = Task.Factory.StartNew(() => Autocomplete(startStation));
                 txtStartStation.AutoCompleteCustomSource = source.Result;
                 txtStartStation.AutoCompleteMode = AutoCompleteMode.SuggestAppend;
                 txtStartStation.AutoCompleteSource = AutoCompleteSource.CustomSource;
-            }
+            }*/
         }
 
         /// <summary>
@@ -54,17 +56,15 @@ namespace SwissTransportTimetable
         /// <param name="e">KeyUp-Event</param>
         private void EndStation_KeyUp(object sender, KeyEventArgs e)
         {
-            Console.WriteLine(e.KeyCode.ToString());
-
             //Autocomplete hinzufügen
-            string endStation = txtEndStation.Text;
-            if (endStation.Length == 3) //Nur bei Textlänge 3, sonst Überlastung         
+            /*string endStation = txtEndStation.Text;
+            if (e.KeyCode.ToString() != "Back" && e.KeyCode.ToString() != "Delete" && e.KeyCode.ToString() != "Up" && e.KeyCode.ToString() != "Down" && endStation.Length == 3) //Nur bei Textlänge 3, sonst Überlastung         
             {
                 var source = Task.Factory.StartNew(() => Autocomplete(endStation));
                 txtEndStation.AutoCompleteCustomSource = source.Result;
                 txtEndStation.AutoCompleteMode = AutoCompleteMode.SuggestAppend;
                 txtEndStation.AutoCompleteSource = AutoCompleteSource.CustomSource;
-            }
+            }*/
         }
 
         /// <summary>
@@ -88,9 +88,10 @@ namespace SwissTransportTimetable
                 if (!string.IsNullOrEmpty(startStation))
                 {
                     var foundEndStation = Task.Factory.StartNew(() => SearchStation(startStation));
-                    if (foundEndStation.Result != startStation)
+                    if (foundEndStation.Result.Find(x => x.Name.Contains(startStation)) == null)
                     {
                         isValid = false;
+                        Cursor = Cursors.Default;
                         MessageBox.Show("Die Startstation ist ungültig.");
                         
                     }
@@ -101,14 +102,16 @@ namespace SwissTransportTimetable
                     if (!string.IsNullOrEmpty(endStation))
                     {
                         var foundEndStation = Task.Factory.StartNew(() => SearchStation(endStation));
-                        if (foundEndStation.Result != endStation)
+                        if (foundEndStation.Result.Find(x => x.Name.Contains(endStation)) == null)
                         {
                             isValid = false;
+                            Cursor = Cursors.Default;
                             MessageBox.Show("Die Endstation ist ungültig.");
                         }
                     }
                     else
                     {
+                        Cursor = Cursors.Default;
                         MessageBox.Show("Sie müssen eine Endstation angeben.");
                     }
                 }
@@ -196,7 +199,8 @@ namespace SwissTransportTimetable
 
                 if (!string.IsNullOrEmpty(fromStation))
                 {
-                    if (SearchStation(fromStation) != fromStation)
+                    var foundFromStation = Task.Factory.StartNew(() => SearchStation(fromStation));
+                    if (foundFromStation.Result.Find(x => x.Name.Contains(fromStation)) == null)
                     {
                         MessageBox.Show("Die Startstation ist ungültig.");
                     }
@@ -252,12 +256,13 @@ namespace SwissTransportTimetable
         /// </summary>
         /// <param name="station">Stationsname</param>
         /// <returns>string: Vollständiger Stationsname</returns>
-        public string SearchStation(string station)
+        public List<Station> SearchStation(string station)
         {
             //Station auslesen
             Transport transport = new Transport();
-            var transportStation = transport.GetStations(station);
-            return transportStation != null ? transportStation.StationList[0].Name.ToString() : null;
+            var transportStation = transport.GetStations(station).StationList;
+            return transportStation;
+            //return transportStation != null ? transportStation.StationList[0].Name.ToString() : null;
         }
 
         /// <summary>
@@ -316,18 +321,125 @@ namespace SwissTransportTimetable
         private void btnMail_Click(object sender, EventArgs e)
         {
             string nachricht = "";
+            bool head = true;
             for (int zeile = 0; zeile < listViewConnection.Items.Count; zeile++)
             {
                 for (int spalte = 0; spalte < listViewConnection.Columns.Count; spalte++)
                 {
-                    nachricht += listViewConnection.Items[zeile].SubItems[spalte].ToString() + "\t";
+                    //Spaltenkopf
+                    if (head)
+                    {
+                        nachricht += listViewConnection.Columns[spalte].Text + "\t";
+                    }
+                    else
+                    {
+                        nachricht += listViewConnection.Items[zeile].SubItems[spalte].Text + "\t";
+                    }
                 }
-
+                if(head)
+                {
+                    zeile--;
+                    head = false;
+                }
                 nachricht += "\n";
             }
 
             Mail mail = new Mail(nachricht);
             mail.ShowDialog();
+        }
+
+        private void mapsStartStation_Click(object sender, EventArgs e)
+        {
+            string stationName = txtStartStation.Text;
+
+            if (!string.IsNullOrEmpty(stationName))
+            {
+                var foundEndStation = Task.Factory.StartNew(() => SearchStation(stationName));
+                if (foundEndStation.Result.Find(x => x.Name.Contains(stationName)) == null)
+                {
+                    MessageBox.Show("Die Startstation ist ungültig.");
+                }
+                else
+                {
+                    Station station = GetKoordinaten(stationName);
+
+                    StatusBarLabel.Text = "Karte wird geöffnet.";
+                    ShowGoogleMapsRoute(station.Coordinate.XCoordinate, station.Coordinate.YCoordinate);
+                }
+                
+            }
+
+        }
+
+        public static void ShowGoogleMapsRoute(double xKoordinate, double yKoordinate)
+        {
+            Process.Start(String.Format("http://maps.google.de/maps?q={0},{1}", xKoordinate, yKoordinate));
+        }
+
+        public Station GetKoordinaten(string stationName)
+        {
+            Transport transport = new Transport();
+            var transportStation = transport.GetStations(stationName).StationList[0];
+            return transportStation;
+        }
+
+        private void mapsEndStation_Click(object sender, EventArgs e)
+        {
+            string stationName = txtEndStation.Text;
+            if (!string.IsNullOrEmpty(stationName))
+            {
+                var foundEndStation = Task.Factory.StartNew(() => SearchStation(stationName));
+                if (foundEndStation.Result.Find(x => x.Name.Contains(stationName)) == null)
+                {
+                    MessageBox.Show("Die Endstation ist ungültig.");
+                }
+                else
+                {
+                    Station station = GetKoordinaten(stationName);
+
+                    StatusBarLabel.Text = "Karte wird geöffnet.";
+                    ShowGoogleMapsRoute(station.Coordinate.XCoordinate, station.Coordinate.YCoordinate);
+                }
+
+            }
+        }
+
+        /// <summary>
+        ///  Während des Schreibens in der Textbox "Startstation"
+        ///  wird das AutoComplete für die Stationen geladen
+        /// </summary>
+        /// /// <param name="sender">Sender</param>
+        /// <param name="e">KeyUp-Event</param>
+        private void startStation_TextChanged(object sender, EventArgs e)
+        {
+            //Autocomplete hinzufügen
+            string startStation = txtStartStation.Text;
+            if (startStation.Length == 3) //Nur bei Textlänge 3, sonst Überlastung
+            {
+                var source = Task.Factory.StartNew(() => Autocomplete(startStation));
+                txtStartStation.AutoCompleteCustomSource = source.Result;
+                txtStartStation.AutoCompleteMode = AutoCompleteMode.SuggestAppend;
+                txtStartStation.AutoCompleteSource = AutoCompleteSource.CustomSource;
+            }
+        }
+
+        /// <summary>
+        ///  Während des Schreibens in der Textbox "Endstation"
+        ///  wird das AutoComplete für die Stationen geladen
+        /// </summary>
+        /// <param name="sender">Sender</param>
+        /// <param name="e">KeyUp-Event</param>
+        private void endStation_TextChanged(object sender, EventArgs e)
+        {
+            //Autocomplete hinzufügen
+            string endStation = txtEndStation.Text;
+            if (endStation.Length == 3) //Nur bei Textlänge 3, sonst Überlastung         
+            {
+                var source = Task.Factory.StartNew(() => Autocomplete(endStation));
+                txtEndStation.AutoCompleteCustomSource = source.Result;
+                txtEndStation.AutoCompleteMode = AutoCompleteMode.SuggestAppend;
+                txtEndStation.AutoCompleteSource = AutoCompleteSource.CustomSource;
+            }
         }
     }
 }
