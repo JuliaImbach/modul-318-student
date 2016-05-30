@@ -266,14 +266,12 @@ namespace SwissTransportTimetable
                             nachricht += listViewConnection.Items[index].SubItems[spalte].Text + "\t";
                         }
                     }
-
                     head = head ? false : true;
                     nachricht += "\n";
                 } while (!head);
 
                 Mail mail = new Mail(nachricht);
                 mail.ShowDialog();
-
             }
             else
             {

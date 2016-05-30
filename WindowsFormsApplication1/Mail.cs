@@ -2,6 +2,7 @@
 using System.Windows.Forms;
 using System.Net.Mail;
 using System.Net;
+using System.Configuration;
 
 namespace SwissTransportTimetable
 {
@@ -44,7 +45,7 @@ namespace SwissTransportTimetable
 
             try
             {
-                sendMail(absender, empfaenger, betreff, nachricht + "\n\n" + this.Nachricht, "smtp.gmail.com", 587, txtPasswort.Text);
+                sendMail(absender, empfaenger, betreff, nachricht + "\n\n" + this.Nachricht, ConfigurationManager.AppSettings["smtp-server"], Convert.ToInt32(ConfigurationManager.AppSettings["port"]), txtPasswort.Text);
             }
             catch (Exception ex)
             {
