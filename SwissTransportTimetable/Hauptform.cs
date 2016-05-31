@@ -20,7 +20,7 @@ namespace SwissTransportTimetable
         /// </summary>
         /// <param name="sender">Sender</param>
         /// <param name="e">Click-Event</param>
-        private void cmdSearch_Click(object sender, EventArgs e)
+        private void btnSearch_Click(object sender, EventArgs e)
         {
             try
             {
@@ -161,8 +161,9 @@ namespace SwissTransportTimetable
                         MessageBox.Show("Die Startstation ist ungültig.");
                     }
                     else
-                    {
-
+                    {                     
+                        txtStartStation.Text = foundFromStation.Result.Find(x => x.Name.ToLower().Contains(fromStation.ToLower())).Name.ToString();
+                        
                         //Abfahrtszeiten auslesen
                         var timetables = SearchStationBoard(fromStation);
 

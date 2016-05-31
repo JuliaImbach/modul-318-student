@@ -54,7 +54,7 @@
             this.cmdSearch.TabIndex = 3;
             this.cmdSearch.Text = "Verbindungen Suchen";
             this.cmdSearch.UseVisualStyleBackColor = true;
-            this.cmdSearch.Click += new System.EventHandler(this.cmdSearch_Click);
+            this.cmdSearch.Click += new System.EventHandler(this.btnSearch_Click);
             // 
             // txtStartStation
             // 
