@@ -3,6 +3,7 @@ using System.Windows.Forms;
 using System.Net.Mail;
 using System.Net;
 using System.Configuration;
+using SwissTransport;
 
 namespace SwissTransportTimetable
 {
@@ -37,7 +38,7 @@ namespace SwissTransportTimetable
 
             try
             {
-                sendMail(absender, empfaenger, betreff, nachricht + "\n\n" + this.Nachricht, ConfigurationManager.AppSettings["smtp-server"], Convert.ToInt32(ConfigurationManager.AppSettings["port"]), txtPasswort.Text);
+                sendMail(absender, empfaenger, betreff, nachricht, ConfigurationManager.AppSettings["smtp-server"], Convert.ToInt32(ConfigurationManager.AppSettings["port"]), txtPasswort.Text);
             }
             catch (Exception ex)
             {
@@ -73,7 +74,8 @@ namespace SwissTransportTimetable
             Email.Subject = betreff;
 
             //Hinzufügen der eigentlichen Nachricht
-            Email.Body = nachricht;
+            Email.Body = CreateBodyMesssage(nachricht, this.Nachricht);
+            Email.IsBodyHtml = true;
 
             //Ausgangsserver initialisieren
             SmtpClient MailClient = new SmtpClient(server, port);
@@ -82,6 +84,20 @@ namespace SwissTransportTimetable
 
             //Email absenden
             MailClient.Send(Email);
+        }
+
+        private string CreateBodyMesssage(string nachricht, string connectionMessage)
+        {
+            return "<!DOCTPYPE html>"
+                + "<html>"
+                + "<head></head>"
+                + "<body>"
+                + "<p>"
+                + nachricht.Trim().Replace("\r\n", "<br>")
+                + "<table style=\"border-collapse: collapse\">"
+                + connectionMessage
+                + "</table>"
+                + "</body>";
         }
     }
 }

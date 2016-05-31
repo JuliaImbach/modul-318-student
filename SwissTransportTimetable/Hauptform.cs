@@ -17,6 +17,12 @@ namespace SwissTransportTimetable
             InitializeComponent();
         }
 
+        // Properties
+        /// <summary>
+        /// Definition des Styles für die Mail
+        /// </summary>
+        private string CellStyle { get; } = "style=\"border: 1px solid black; padding: 5px;\"";
+
         /// <summary>
         ///  Beim Klick auf den Button "Suchen" werden die Verbindungen
         ///  zwischen Startstation und Endstation gesucht und in der
@@ -179,45 +185,73 @@ namespace SwissTransportTimetable
         }
 
         /// <summary>
-        ///  Es wird die Form Mail für den Mailversand geöffnet
-        ///  und der Nachrichtentext mit der gewählten Verbindung
-        ///  zusammengesetzt.
+        ///  Es wird die Form Mail für den Mailversand geöffnet.
         /// </summary>
         /// <param name="sender">Sender</param>
         /// <param name="e">Click-Event</param>
         private void btnMail_Click(object sender, EventArgs e)
         {
-            string nachricht = "";
-            bool head = true;
-
             if (listViewConnection.SelectedItems.Count == 0)
             {
                 MessageBox.Show("Sie müssen zuerst eine Verbindung wählen.");
                 return;
             }
 
-            var index = listViewConnection.SelectedIndices[0];
-            do
-            {
-                for (int spalte = 0; spalte < listViewConnection.Columns.Count; spalte++)
-                {
-                    //Spaltenkopf
-                    if (head)
-                    {
-                        nachricht += listViewConnection.Columns[spalte].Text + "\t";
-                    }
-                    else
-                    {
-                        nachricht += listViewConnection.Items[index].SubItems[spalte].Text + "\t";
-                    }
-                }
-                head = head ? false : true;
-                nachricht += "\n";
-
-            } while (!head);
+            // Nachricht zusammensetzen
+            string nachricht = GetTableHeader() + GetTableLines();
 
             Mail mail = new Mail(nachricht);
             mail.ShowDialog();
+        }
+
+        /// <summary>
+        ///  Tabellenkopf für die Mail zusammensetzen
+        /// </summary>
+        /// <returns>string: Tabellenkopf</returns>
+        private string GetTableHeader()
+        {
+            // Spaltenköpfe in List laden
+            List<string> names = new List<string>();
+            for (int spalte = 0; spalte < listViewConnection.Columns.Count; spalte++)
+            {
+                var das = listViewConnection.Columns[spalte].Text;
+                var deses = listViewConnection.Columns[spalte].Text.ToString();
+                names.Add(listViewConnection.Columns[spalte].Text);
+            }
+
+            // Message in HTML abfüllen
+            var message = "<tr>";
+            foreach (var name in names)
+            {
+                message += $"<th {CellStyle}>{name}</th>";
+            }
+            message += "</tr>";
+            return message;
+        }
+
+        /// <summary>
+        ///  Tabellenzeile für die Mail zusammensetzen
+        /// </summary>
+        /// <returns>string: Tabellenzeile</returns>
+        private string GetTableLines()
+        {
+            var index = listViewConnection.SelectedIndices[0];
+
+            // Spalten-Werte von selektierter Zeile in List laden
+            List<string> values = new List<string>();
+            for (int spalte = 0; spalte < listViewConnection.Columns.Count; spalte++)
+            {
+                values.Add(listViewConnection.Items[index].SubItems[spalte].Text);
+            }
+
+            // Message in HTML abfüllen
+            var message = "<tr>";
+            foreach (var value in values)
+            {
+                message += $"<td {CellStyle}>{value}</td>";
+            }
+            message += "</tr>";
+            return message;
         }
 
         /// <summary>
@@ -315,6 +349,7 @@ namespace SwissTransportTimetable
         /// </summary>
         ///  <param name="txtStation">TextBox des Stationsnamen</param>
         /// <param name="isFromStation">Startstation</param>
+        /// <returns>bool: Validation</returns>
         private bool ValidateStations(TextBox txtStation, bool isFromStation)
         {
             // Stationsname auslesen
