@@ -29,10 +29,10 @@
         private void InitializeComponent()
         {
             this.cmdSearch = new System.Windows.Forms.Button();
-            this.txtStartStation = new System.Windows.Forms.TextBox();
+            this.txtFromStation = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
-            this.txtEndStation = new System.Windows.Forms.TextBox();
+            this.txtToStation = new System.Windows.Forms.TextBox();
             this.label3 = new System.Windows.Forms.Label();
             this.btnDeparture = new System.Windows.Forms.Button();
             this.listViewConnection = new System.Windows.Forms.ListView();
@@ -58,15 +58,15 @@
             // 
             // txtStartStation
             // 
-            this.txtStartStation.AutoCompleteCustomSource.AddRange(new string[] {
+            this.txtFromStation.AutoCompleteCustomSource.AddRange(new string[] {
             "Hall",
             "Zürhc"});
-            this.txtStartStation.HideSelection = false;
-            this.txtStartStation.Location = new System.Drawing.Point(13, 30);
-            this.txtStartStation.Name = "txtStartStation";
-            this.txtStartStation.Size = new System.Drawing.Size(335, 20);
-            this.txtStartStation.TabIndex = 1;
-            this.txtStartStation.TextChanged += new System.EventHandler(this.startStation_TextChanged);
+            this.txtFromStation.HideSelection = false;
+            this.txtFromStation.Location = new System.Drawing.Point(13, 30);
+            this.txtFromStation.Name = "txtStartStation";
+            this.txtFromStation.Size = new System.Drawing.Size(335, 20);
+            this.txtFromStation.TabIndex = 1;
+            this.txtFromStation.TextChanged += new System.EventHandler(this.startStation_TextChanged);
             // 
             // label1
             // 
@@ -88,11 +88,11 @@
             // 
             // txtEndStation
             // 
-            this.txtEndStation.Location = new System.Drawing.Point(13, 74);
-            this.txtEndStation.Name = "txtEndStation";
-            this.txtEndStation.Size = new System.Drawing.Size(335, 20);
-            this.txtEndStation.TabIndex = 2;
-            this.txtEndStation.TextChanged += new System.EventHandler(this.endStation_TextChanged);
+            this.txtToStation.Location = new System.Drawing.Point(13, 74);
+            this.txtToStation.Name = "txtEndStation";
+            this.txtToStation.Size = new System.Drawing.Size(335, 20);
+            this.txtToStation.TabIndex = 2;
+            this.txtToStation.TextChanged += new System.EventHandler(this.endStation_TextChanged);
             // 
             // label3
             // 
@@ -207,9 +207,9 @@
             this.Controls.Add(this.btnDeparture);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.label2);
-            this.Controls.Add(this.txtEndStation);
+            this.Controls.Add(this.txtToStation);
             this.Controls.Add(this.label1);
-            this.Controls.Add(this.txtStartStation);
+            this.Controls.Add(this.txtFromStation);
             this.Controls.Add(this.cmdSearch);
             this.MaximumSize = new System.Drawing.Size(750, 360);
             this.MinimumSize = new System.Drawing.Size(550, 342);
@@ -226,10 +226,10 @@
         #endregion
 
         private System.Windows.Forms.Button cmdSearch;
-        private System.Windows.Forms.TextBox txtStartStation;
+        private System.Windows.Forms.TextBox txtFromStation;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.TextBox txtEndStation;
+        private System.Windows.Forms.TextBox txtToStation;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Button btnDeparture;
         private System.Windows.Forms.ListView listViewConnection;

@@ -29,12 +29,12 @@ namespace SwissTransportTimetable
 
                 //Stationen auslesen und validieren
                 bool isValid = true;
-                string startStation = txtStartStation.Text;
-                string endStation = txtEndStation.Text;
-                if (!string.IsNullOrEmpty(startStation))
+                string fromStation = txtFromStation.Text;
+                string toStation = txtToStation.Text;
+                if (!string.IsNullOrEmpty(fromStation))
                 {
-                    var foundStartStation = Task.Factory.StartNew(() => SearchStation(startStation));
-                    if (foundStartStation.Result.Find(x => x.Name.ToLower().Contains(startStation.ToLower())) == null)
+                    var foundFromStation = Task.Factory.StartNew(() => SearchStation(fromStation));
+                    if (foundFromStation.Result.Find(x => x.Name.ToLower().Contains(fromStation.ToLower())) == null)
                     {
                         isValid = false;
                         Cursor = Cursors.Default;
@@ -42,16 +42,16 @@ namespace SwissTransportTimetable
                     }
                     else
                     {
-                        txtStartStation.Text = foundStartStation.Result.Find(x => x.Name.ToLower().Contains(startStation.ToLower())).Name.ToString();
+                        txtFromStation.Text = foundFromStation.Result.Find(x => x.Name.ToLower().Contains(fromStation.ToLower())).Name.ToString();
                     }
                 }
 
                 if (isValid)
                 {
-                    if (!string.IsNullOrEmpty(endStation))
+                    if (!string.IsNullOrEmpty(toStation))
                     {
-                        var foundEndStation = Task.Factory.StartNew(() => SearchStation(endStation));
-                        if (foundEndStation.Result.Find(x => x.Name.ToLower().Contains(endStation.ToLower())) == null)
+                        var foundToStation = Task.Factory.StartNew(() => SearchStation(toStation));
+                        if (foundToStation.Result.Find(x => x.Name.ToLower().Contains(toStation.ToLower())) == null)
                         {
                             isValid = false;
                             Cursor = Cursors.Default;
@@ -59,7 +59,7 @@ namespace SwissTransportTimetable
                         }
                         else
                         {
-                            txtEndStation.Text = foundEndStation.Result.Find(x => x.Name.ToLower().Contains(endStation.ToLower())).Name.ToString();
+                            txtToStation.Text = foundToStation.Result.Find(x => x.Name.ToLower().Contains(toStation.ToLower())).Name.ToString();
                         }
                     }
                     else
@@ -77,7 +77,7 @@ namespace SwissTransportTimetable
                     bool isArrival = chbAnkunft.Checked;
 
                     //Verbindungen auslesen
-                    var connections = Task.Factory.StartNew(() => SearchConnectionDate(startStation, endStation, date, time, isArrival));
+                    var connections = Task.Factory.StartNew(() => SearchConnectionDate(fromStation, toStation, date, time, isArrival));
 
                     //ListView leeren
                     listViewConnection.Items.Clear();
@@ -151,7 +151,7 @@ namespace SwissTransportTimetable
                 //Sanduhr einblenden
                 Cursor.Current = Cursors.WaitCursor;
 
-                string fromStation = txtStartStation.Text;
+                string fromStation = txtFromStation.Text;
 
                 if (!string.IsNullOrEmpty(fromStation))
                 {
@@ -162,7 +162,7 @@ namespace SwissTransportTimetable
                     }
                     else
                     {                     
-                        txtStartStation.Text = foundFromStation.Result.Find(x => x.Name.ToLower().Contains(fromStation.ToLower())).Name.ToString();
+                        txtFromStation.Text = foundFromStation.Result.Find(x => x.Name.ToLower().Contains(fromStation.ToLower())).Name.ToString();
                         
                         //Abfahrtszeiten auslesen
                         var timetables = SearchStationBoard(fromStation);
@@ -257,7 +257,7 @@ namespace SwissTransportTimetable
         /// <param name="e">KeyUp-Event</param>
         private void mapsStartStation_Click(object sender, EventArgs e)
         {
-            string stationName = txtStartStation.Text;
+            string stationName = txtFromStation.Text;
 
             if (!string.IsNullOrEmpty(stationName))
             {
@@ -286,7 +286,7 @@ namespace SwissTransportTimetable
         /// <param name="e">KeyUp-Event</param>
         private void mapsEndStation_Click(object sender, EventArgs e)
         {
-            string stationName = txtEndStation.Text;
+            string stationName = txtToStation.Text;
             if (!string.IsNullOrEmpty(stationName))
             {
                 var foundEndStation = Task.Factory.StartNew(() => SearchStation(stationName));
@@ -314,13 +314,13 @@ namespace SwissTransportTimetable
         private void startStation_TextChanged(object sender, EventArgs e)
         {
             //Autocomplete hinzufügen
-            string startStation = txtStartStation.Text;
+            string startStation = txtFromStation.Text;
             if (startStation.Length == 3) //Nur bei Textlänge 3, sonst Überlastung
             {
                 var source = Task.Factory.StartNew(() => Autocomplete(startStation));
-                txtStartStation.AutoCompleteCustomSource = source.Result;
-                txtStartStation.AutoCompleteMode = AutoCompleteMode.SuggestAppend;
-                txtStartStation.AutoCompleteSource = AutoCompleteSource.CustomSource;
+                txtFromStation.AutoCompleteCustomSource = source.Result;
+                txtFromStation.AutoCompleteMode = AutoCompleteMode.SuggestAppend;
+                txtFromStation.AutoCompleteSource = AutoCompleteSource.CustomSource;
             }
         }
 
@@ -333,13 +333,13 @@ namespace SwissTransportTimetable
         private void endStation_TextChanged(object sender, EventArgs e)
         {
             //Autocomplete hinzufügen
-            string endStation = txtEndStation.Text;
+            string endStation = txtToStation.Text;
             if (endStation.Length == 3) //Nur bei Textlänge 3, sonst Überlastung         
             {
                 var source = Task.Factory.StartNew(() => Autocomplete(endStation));
-                txtEndStation.AutoCompleteCustomSource = source.Result;
-                txtEndStation.AutoCompleteMode = AutoCompleteMode.SuggestAppend;
-                txtEndStation.AutoCompleteSource = AutoCompleteSource.CustomSource;
+                txtToStation.AutoCompleteCustomSource = source.Result;
+                txtToStation.AutoCompleteMode = AutoCompleteMode.SuggestAppend;
+                txtToStation.AutoCompleteSource = AutoCompleteSource.CustomSource;
             }
         }
 
