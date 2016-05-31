@@ -8,27 +8,19 @@ namespace SwissTransportTimetable
 {
     public partial class Mail : Form
     {
-        //Membervariabeln
-        string m_Nachricht = "";
-
         //Konstruktoren
         public Mail()
         {
             InitializeComponent();
         }
 
-        public Mail(string nachricht)
+        public Mail(string nachricht) : this()
         {
-            InitializeComponent();
             this.Nachricht = nachricht;
         }
 
-        //Get-/Set-Methoden
-        public string Nachricht
-        {
-            get { return m_Nachricht; }
-            set { m_Nachricht = value; }
-        }
+        //Properties
+        public string Nachricht { get; set; }
 
         /// <summary>
         ///  Der Mailversand wird ausgelöst und Mail aus den

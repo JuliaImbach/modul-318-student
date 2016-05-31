@@ -3,7 +3,6 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using System.Diagnostics;
 
 namespace SwissTransportTimetable
 {
@@ -34,12 +33,16 @@ namespace SwissTransportTimetable
                 string endStation = txtEndStation.Text;
                 if (!string.IsNullOrEmpty(startStation))
                 {
-                    var foundEndStation = Task.Factory.StartNew(() => SearchStation(startStation));
-                    if (foundEndStation.Result.Find(x => x.Name.ToLower().Contains(startStation.ToLower())) == null)
+                    var foundStartStation = Task.Factory.StartNew(() => SearchStation(startStation));
+                    if (foundStartStation.Result.Find(x => x.Name.ToLower().Contains(startStation.ToLower())) == null)
                     {
                         isValid = false;
                         Cursor = Cursors.Default;
                         MessageBox.Show("Die Startstation ist ungültig.");
+                    }
+                    else
+                    {
+                        txtStartStation.Text = foundStartStation.Result.Find(x => x.Name.ToLower().Contains(startStation.ToLower())).Name.ToString();
                     }
                 }
 
@@ -53,6 +56,10 @@ namespace SwissTransportTimetable
                             isValid = false;
                             Cursor = Cursors.Default;
                             MessageBox.Show("Die Endstation ist ungültig.");
+                        }
+                        else
+                        {
+                            txtEndStation.Text = foundEndStation.Result.Find(x => x.Name.ToLower().Contains(endStation.ToLower())).Name.ToString();
                         }
                     }
                     else
@@ -423,7 +430,9 @@ namespace SwissTransportTimetable
         /// <param name="yKoordinate">Y-Koordinate der Station</param>
         public static void ShowGoogleMapsRoute(double xKoordinate, double yKoordinate)
         {
-            Process.Start(String.Format("http://maps.google.de/maps?q={0},{1}", xKoordinate, yKoordinate));
+            string url = String.Format("http://maps.google.de/maps?q={0},{1}", xKoordinate, yKoordinate);
+            frmWebBrowser webBrowser = new frmWebBrowser(url);
+            webBrowser.Show();
         }
 
         /// <summary>
