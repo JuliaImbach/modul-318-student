@@ -8,6 +8,10 @@ namespace SwissTransportTimetable
 {
     public partial class Hauptform : Form
     {
+        // Membervariabeln
+        Transport transport = new Transport();
+
+        // Konstruktoren
         public Hauptform()
         {
             InitializeComponent();
@@ -22,117 +26,89 @@ namespace SwissTransportTimetable
         /// <param name="e">Click-Event</param>
         private void btnSearch_Click(object sender, EventArgs e)
         {
+            // Sanduhr einblenden
+            Cursor.Current = Cursors.WaitCursor;
+
+            // Stationen auslesen und validieren
+            string fromStation = txtFromStation.Text;
+            string toStation = txtToStation.Text;
+
+            // Start- und Endstation validieren
+            bool valid = ValidateStations(txtFromStation, true);
+            if (!valid)
+            {
+                return;
+            }
+            valid = ValidateStations(txtToStation, false);
+            if (!valid)
+            {
+                return;
+            }
+
+            StatusBarLabel.Text = "Verbindungen werden geladen...";
+            string date = Convert.ToDateTime(dateConnection.Text).ToString("yyyy-MM-dd");
+            string time = Convert.ToDateTime(dateConnection.Text).ToShortTimeString();
+            bool isArrival = chbAnkunft.Checked;
+
+            // Verbindungen auslesen
+            Task<List<Connection>> connections = null;
             try
             {
-                //Sanduhr einblenden
-                Cursor.Current = Cursors.WaitCursor;
-
-                //Stationen auslesen und validieren
-                bool isValid = true;
-                string fromStation = txtFromStation.Text;
-                string toStation = txtToStation.Text;
-                if (!string.IsNullOrEmpty(fromStation))
-                {
-                    var foundFromStation = Task.Factory.StartNew(() => SearchStation(fromStation));
-                    if (foundFromStation.Result.Find(x => x.Name.ToLower().Contains(fromStation.ToLower())) == null)
-                    {
-                        isValid = false;
-                        Cursor = Cursors.Default;
-                        MessageBox.Show("Die Startstation ist ungültig.");
-                    }
-                    else
-                    {
-                        txtFromStation.Text = foundFromStation.Result.Find(x => x.Name.ToLower().Contains(fromStation.ToLower())).Name.ToString();
-                    }
-                }
-
-                if (isValid)
-                {
-                    if (!string.IsNullOrEmpty(toStation))
-                    {
-                        var foundToStation = Task.Factory.StartNew(() => SearchStation(toStation));
-                        if (foundToStation.Result.Find(x => x.Name.ToLower().Contains(toStation.ToLower())) == null)
-                        {
-                            isValid = false;
-                            Cursor = Cursors.Default;
-                            MessageBox.Show("Die Endstation ist ungültig.");
-                        }
-                        else
-                        {
-                            txtToStation.Text = foundToStation.Result.Find(x => x.Name.ToLower().Contains(toStation.ToLower())).Name.ToString();
-                        }
-                    }
-                    else
-                    {
-                        Cursor = Cursors.Default;
-                        MessageBox.Show("Sie müssen eine Endstation angeben.");
-                    }
-                }
-
-                if (isValid)
-                {
-                    StatusBarLabel.Text = "Verbindungen werden geladen...";
-                    string date = Convert.ToDateTime(dateConnection.Text).ToString("yyyy-MM-dd");
-                    string time = Convert.ToDateTime(dateConnection.Text).ToShortTimeString();
-                    bool isArrival = chbAnkunft.Checked;
-
-                    //Verbindungen auslesen
-                    var connections = Task.Factory.StartNew(() => SearchConnectionDate(fromStation, toStation, date, time, isArrival));
-
-                    //ListView leeren
-                    listViewConnection.Items.Clear();
-
-                    //Spalten zu ListView leeren und neue Spalten hinzufügen
-                    listViewConnection.Columns.Clear();
-                    listViewConnection.Columns.Add("Abfahrt", 50);
-                    listViewConnection.Columns.Add("Gleis", 40);
-                    listViewConnection.Columns.Add("von Station", (listViewConnection.Width - 300) / 2);
-                    listViewConnection.Columns.Add("Ankuft", 50);
-                    listViewConnection.Columns.Add("Gleis", 40);
-                    listViewConnection.Columns.Add("zu Station", (listViewConnection.Width - 300) / 2);
-                    listViewConnection.Columns.Add("Dauer", 100);
-
-                    if (connections.Result.Count != 0)
-                    {
-                        foreach (var connection in connections.Result)
-                        {
-                            var duration = "";
-
-                            //Dauer hinzufügen
-                            if (connection.Duration.Substring(0, 2) != "00")
-                            {
-                                duration = connection.Duration.Substring(0, 2) + " Tag(e) ";
-                            }
-
-                            duration += Convert.ToDateTime(connection.Duration.Substring(3)).ToShortTimeString() + " Stunden";
-
-                            //Item abfüllen
-                            ListViewItem item = new ListViewItem(Convert.ToDateTime(connection.From.Departure).ToShortTimeString());
-                            item.SubItems.Add(connection.From.Platform);
-                            item.SubItems.Add(connection.From.Station.Name);
-                            item.SubItems.Add(Convert.ToDateTime(connection.To.Arrival).ToShortTimeString());
-                            item.SubItems.Add(connection.To.Platform);
-                            item.SubItems.Add(connection.To.Station.Name);
-                            item.SubItems.Add(duration);
-
-                            //Item zu Listview hinzufügen
-                            listViewConnection.Items.Add(item);
-                        }
-
-                        StatusBarLabel.Text = "Verbindungen wurden geladen.";
-                    }
-                    else
-                    {
-                        StatusBarLabel.Text = "Keine Verbindungen verfügbar.";
-                    }
-                }
+                connections = Task.Factory.StartNew(() => new Transport().GetConnectionsDate(fromStation, toStation, date, time, isArrival ? "1" : "0").ConnectionList);
             }
             catch (Exception ex)
             {
-                StatusBarLabel.Text = "Verbindungen konnten nicht geladen werden: " + ex.Message;
+                StatusBarLabel.Text = "Verbindungen konnten vom Webservice nicht geladen werden: " + ex.Message;
             }
 
-            //Cursor zurücksetzen
+            // ListView leeren
+            listViewConnection.Items.Clear();
+
+            // Spalten zu ListView leeren und neue Spalten hinzufügen
+            listViewConnection.Columns.Clear();
+            listViewConnection.Columns.Add("Abfahrt", 50);
+            listViewConnection.Columns.Add("Gleis", 40);
+            listViewConnection.Columns.Add("von Station", (listViewConnection.Width - 300) / 2);
+            listViewConnection.Columns.Add("Ankuft", 50);
+            listViewConnection.Columns.Add("Gleis", 40);
+            listViewConnection.Columns.Add("zu Station", (listViewConnection.Width - 300) / 2);
+            listViewConnection.Columns.Add("Dauer", 100);
+
+            if (connections.Result.Count == 0)
+            {
+                StatusBarLabel.Text = "Keine Verbindungen verfügbar.";
+                return;
+            }
+
+            // Verbindungen in ListView abfüllen
+            foreach (var connection in connections.Result)
+            {
+                var duration = "";
+
+                // Dauer hinzufügen
+                if (connection.Duration.Substring(0, 2) != "00")
+                {
+                    duration = connection.Duration.Substring(0, 2) + " Tag(e) ";
+                }
+                duration += Convert.ToDateTime(connection.Duration.Substring(3)).ToShortTimeString() + " Stunden";
+
+                // Item abfüllen
+                ListViewItem item = new ListViewItem(new[] {
+                        Convert.ToDateTime(connection.From.Departure).ToShortTimeString(),
+                        connection.From.Platform,
+                        connection.From.Station.Name,
+                        Convert.ToDateTime(connection.To.Arrival).ToShortTimeString(),
+                        connection.To.Platform,
+                        connection.To.Station.Name,
+                        duration
+                    });
+
+                listViewConnection.Items.Add(item);
+            }
+
+            StatusBarLabel.Text = "Verbindungen wurden geladen.";
+
+            // Cursor zurücksetzen
             Cursor = Cursors.Default;
         }
 
@@ -144,64 +120,59 @@ namespace SwissTransportTimetable
         /// <param name="e">Click-Event</param>
         private void btnStationBoard_Click(object sender, EventArgs e)
         {
+            StatusBarLabel.Text = "Abfahrtszeiten werden geladen...";
+
+            // Sanduhr einblenden
+            Cursor.Current = Cursors.WaitCursor;
+
+            // Stationsname auslesen
+            string fromStation = txtFromStation.Text;
+
+            // Startstation validieren
+            bool valid = ValidateStations(txtFromStation, true);
+            if (!valid)
+            {
+                return;
+            }
+
+            // Abfahrtszeiten auslesen
+            Task<List<StationBoard>> timetables;
             try
             {
-                StatusBarLabel.Text = "Abfahrtszeiten werden geladen...";
-
-                //Sanduhr einblenden
-                Cursor.Current = Cursors.WaitCursor;
-
-                string fromStation = txtFromStation.Text;
-
-                if (!string.IsNullOrEmpty(fromStation))
-                {
-                    var foundFromStation = Task.Factory.StartNew(() => SearchStation(fromStation));
-                    if (foundFromStation.Result.Find(x => x.Name.ToLower().Contains(fromStation.ToLower())) == null)
-                    {
-                        MessageBox.Show("Die Startstation ist ungültig.");
-                    }
-                    else
-                    {                     
-                        txtFromStation.Text = foundFromStation.Result.Find(x => x.Name.ToLower().Contains(fromStation.ToLower())).Name.ToString();
-                        
-                        //Abfahrtszeiten auslesen
-                        var timetables = SearchStationBoard(fromStation);
-
-                        //ListVie leeren
-                        listViewConnection.Items.Clear();
-
-                        //Spalten zu ListView leeren und neue Spalten hinzufügen
-                        listViewConnection.Columns.Clear();
-                        listViewConnection.Columns.Add("Abfahrtszeit", 100);
-                        listViewConnection.Columns.Add("Linie", 100);
-                        listViewConnection.Columns.Add("Endstation", listViewConnection.Width - 220);
-
-                        if (timetables.Count != 0)
-                        {
-                            foreach (var timetable in timetables)
-                            {
-                                //Item abfüllen
-                                ListViewItem item = new ListViewItem(timetable.Stop.Departure.TimeOfDay.ToString().Substring(0, 5) + " h");
-                                item.SubItems.Add(timetable.Name);
-                                item.SubItems.Add(timetable.To);
-
-                                //Item zu Listview hinzufügen
-                                listViewConnection.Items.Add(item);
-                            }
-
-                            StatusBarLabel.Text = "Abfahrtszeiten wurden geladen.";
-                        }
-                        else
-                        {
-                            StatusBarLabel.Text = "Zu dieser Status sind keine Abfahrtszeiten verfügbar.";
-                        }
-                    }
-                }
+                timetables = Task.Factory.StartNew(() => transport.GetStationBoard(fromStation, transport.GetStations(fromStation).StationList[0].Id).Entries);
             }
             catch (Exception ex)
             {
-                StatusBarLabel.Text = "Abfahrtstafel konnte nicht geladen werden: " + ex.Message;
+                StatusBarLabel.Text = "Abfahrtszeiten konnten vom Webservice nicht geladen werden: " + ex.Message;
+                Cursor = Cursors.Default;
+                return;
             }
+
+            // ListView leeren und neue Spalten hinzufügen
+            listViewConnection.Items.Clear();
+            listViewConnection.Columns.Clear();
+            listViewConnection.Columns.Add("Abfahrtszeit", 100);
+            listViewConnection.Columns.Add("Linie", 100);
+            listViewConnection.Columns.Add("Endstation", listViewConnection.Width - 220);
+
+            if (timetables.Result.Count == 0)
+            {
+                StatusBarLabel.Text = "Zu dieser Status sind keine Abfahrtszeiten verfügbar.";
+                return;
+            }
+
+            foreach (var timetable in timetables.Result)
+            {
+                // Item abfüllen
+                ListViewItem item = new ListViewItem(new[] {
+                    timetable.Stop.Departure.TimeOfDay.ToString().Substring(0, 5) + " h",
+                    timetable.Name,
+                    timetable.To
+                });
+
+                listViewConnection.Items.Add(item);
+            }
+            StatusBarLabel.Text = "Abfahrtszeiten wurden geladen.";
 
             //Cursor zurücksetzen
             Cursor = Cursors.Default;
@@ -219,34 +190,34 @@ namespace SwissTransportTimetable
             string nachricht = "";
             bool head = true;
 
-            if (listViewConnection.SelectedItems.Count > 0)
-            {
-                var index = listViewConnection.SelectedIndices[0];
-                do
-                {
-                    for (int spalte = 0; spalte < listViewConnection.Columns.Count; spalte++)
-                    {
-                        //Spaltenkopf
-                        if (head)
-                        {
-                            nachricht += listViewConnection.Columns[spalte].Text + "\t";
-                        }
-                        else
-                        {
-                            nachricht += listViewConnection.Items[index].SubItems[spalte].Text + "\t";
-                        }
-                    }
-                    head = head ? false : true;
-                    nachricht += "\n";
-                } while (!head);
-
-                Mail mail = new Mail(nachricht);
-                mail.ShowDialog();
-            }
-            else
+            if (listViewConnection.SelectedItems.Count == 0)
             {
                 MessageBox.Show("Sie müssen zuerst eine Verbindung wählen.");
+                return;
             }
+
+            var index = listViewConnection.SelectedIndices[0];
+            do
+            {
+                for (int spalte = 0; spalte < listViewConnection.Columns.Count; spalte++)
+                {
+                    //Spaltenkopf
+                    if (head)
+                    {
+                        nachricht += listViewConnection.Columns[spalte].Text + "\t";
+                    }
+                    else
+                    {
+                        nachricht += listViewConnection.Items[index].SubItems[spalte].Text + "\t";
+                    }
+                }
+                head = head ? false : true;
+                nachricht += "\n";
+
+            } while (!head);
+
+            Mail mail = new Mail(nachricht);
+            mail.ShowDialog();
         }
 
         /// <summary>
@@ -257,25 +228,7 @@ namespace SwissTransportTimetable
         /// <param name="e">KeyUp-Event</param>
         private void mapsStartStation_Click(object sender, EventArgs e)
         {
-            string stationName = txtFromStation.Text;
-
-            if (!string.IsNullOrEmpty(stationName))
-            {
-                var foundEndStation = Task.Factory.StartNew(() => SearchStation(stationName));
-                if (foundEndStation.Result.Find(x => x.Name.ToLower().Contains(stationName.ToLower())) == null)
-                {
-                    MessageBox.Show("Die Startstation ist ungültig.");
-                }
-                else
-                {
-                    Station station = GetStation(stationName);
-
-                    StatusBarLabel.Text = "Karte wird geöffnet.";
-                    ShowGoogleMapsRoute(station.Coordinate.XCoordinate, station.Coordinate.YCoordinate);
-                }
-
-            }
-
+            OpenMaps(txtFromStation, true);
         }
 
         /// <summary>
@@ -286,23 +239,7 @@ namespace SwissTransportTimetable
         /// <param name="e">KeyUp-Event</param>
         private void mapsEndStation_Click(object sender, EventArgs e)
         {
-            string stationName = txtToStation.Text;
-            if (!string.IsNullOrEmpty(stationName))
-            {
-                var foundEndStation = Task.Factory.StartNew(() => SearchStation(stationName));
-                if (foundEndStation.Result.Find(x => x.Name.ToLower().Contains(stationName.ToLower())) == null)
-                {
-                    MessageBox.Show("Die Endstation ist ungültig.");
-                }
-                else
-                {
-                    Station station = GetStation(stationName);
-
-                    StatusBarLabel.Text = "Karte wird geöffnet.";
-                    ShowGoogleMapsRoute(station.Coordinate.XCoordinate, station.Coordinate.YCoordinate);
-                }
-
-            }
+            OpenMaps(txtToStation, false);
         }
 
         /// <summary>
@@ -313,15 +250,14 @@ namespace SwissTransportTimetable
         /// <param name="e">KeyUp-Event</param>
         private void startStation_TextChanged(object sender, EventArgs e)
         {
-            //Autocomplete hinzufügen
-            string startStation = txtFromStation.Text;
-            if (startStation.Length == 3) //Nur bei Textlänge 3, sonst Überlastung
+            // Nur bei Textlänge 3, sonst Überlastung
+            if (txtFromStation.Text.Length != 3)
             {
-                var source = Task.Factory.StartNew(() => Autocomplete(startStation));
-                txtFromStation.AutoCompleteCustomSource = source.Result;
-                txtFromStation.AutoCompleteMode = AutoCompleteMode.SuggestAppend;
-                txtFromStation.AutoCompleteSource = AutoCompleteSource.CustomSource;
+                return;
             }
+
+            // Autocomplete hinzufügen
+            AutoComplete(txtFromStation, true);
         }
 
         /// <summary>
@@ -332,30 +268,14 @@ namespace SwissTransportTimetable
         /// <param name="e">KeyUp-Event</param>
         private void endStation_TextChanged(object sender, EventArgs e)
         {
-            //Autocomplete hinzufügen
-            string endStation = txtToStation.Text;
-            if (endStation.Length == 3) //Nur bei Textlänge 3, sonst Überlastung         
+            // Nur bei Textlänge 3, sonst Überlastung
+            if (txtToStation.Text.Length != 3)
             {
-                var source = Task.Factory.StartNew(() => Autocomplete(endStation));
-                txtToStation.AutoCompleteCustomSource = source.Result;
-                txtToStation.AutoCompleteMode = AutoCompleteMode.SuggestAppend;
-                txtToStation.AutoCompleteSource = AutoCompleteSource.CustomSource;
+                return;
             }
-        }
 
-        /// <summary>
-        ///  Die Funktion überprüft, ob die eigegebene Station
-        ///  exisitiert.
-        /// </summary>
-        /// <param name="station">Stationsname</param>
-        /// <returns>string: Vollständiger Stationsname</returns>
-        public List<Station> SearchStation(string station)
-        {
-            //Station auslesen
-            Transport transport = new Transport();
-            var transportStation = transport.GetStations(station).StationList;
-            return transportStation;
-            //return transportStation != null ? transportStation.StationList[0].Name.ToString() : null;
+            // Autocomplete hinzufügen
+            AutoComplete(txtToStation, true);
         }
 
         /// <summary>
@@ -364,11 +284,10 @@ namespace SwissTransportTimetable
         /// </summary>
         /// <param name="station">Stationsname</param>
         /// <returns>AutoCompleteStringCollection: Source mit Stationen für AutoComplete</returns>
-        public AutoCompleteStringCollection Autocomplete(string station)
+        public AutoCompleteStringCollection AutocompleteSource(string station)
         {
             //Liste mit allen Station in eine Liste laden
             var source = new AutoCompleteStringCollection();
-            Transport transport = new Transport();
 
             var transportList = transport.GetStations(station).StationList;
             foreach (var transportStation in transportList)
@@ -380,56 +299,11 @@ namespace SwissTransportTimetable
         }
 
         /// <summary>
-        ///  Es werden alle Verbindungen zwischen fromStation
-        ///  und toStation ausgelesen und als Liste zurückgegeben.
-        /// </summary>
-        /// <param name="fromStation">Stationsname Startstation</param>
-        /// <param name="endStation">Stationsname Endstation</param>
-        /// <returns>Connection-List: Liste mit Verbindungen</returns>
-        private List<Connection> SearchConnection(string fromStation, string toStation)
-        {
-            //Verbindungen auslesen
-            Transport transport = new Transport();
-            return transport.GetConnections(fromStation, toStation).ConnectionList;
-        }
-
-        /// <summary>
-        ///  Es werden alle Verbindungen zwischen fromStation
-        ///  und toStation zu einem bestimmten Zeitpunkt ausgelesen 
-        ///  und als Liste zurückgegeben.
-        /// </summary>
-        /// <param name="fromStation">Stationsname Startstation</param>
-        /// <param name="endStation">Stationsname Endstation</param>
-        /// <param name="date">Datum der Verbindung</param>
-        /// <param name="time">Zeitpunkt der Verbindung</param>
-        /// <param name="isArrival">Unterscheidung Ankunfts und Abfahrtszeit</param>
-        /// <returns>Connection-List: Liste mit Verbindungen</returns>
-        private List<Connection> SearchConnectionDate(string fromStation, string toStation, string date, string time, bool isArrivalDate)
-        {
-            //Verbindungen auslesen
-            Transport transport = new Transport();
-            return transport.GetConnectionsDate(fromStation, toStation, date, time, (isArrivalDate ? "1" : "0")).ConnectionList;
-        }
-
-        /// <summary>
-        ///  Die Funktion lädt alle Abfahrtszeiten und Endstationen.
-        /// </summary>
-        /// <param name="station">Stationsname</param>
-        /// <returns>StationBoard-List: Liste mit Abfahrtszeiten</returns>
-        private List<StationBoard> SearchStationBoard(string station)
-        {
-
-            //Abfahrsplan auslesen
-            Transport transport = new Transport();
-            return transport.GetStationBoard(station, transport.GetStations(station).StationList[0].Id).Entries;
-        }
-
-        /// <summary>
         ///  Öffnet Googlemaps im Browser
         /// </summary>
         ///  <param name="xKoordinate">X-Koordinate der Station</param>
         /// <param name="yKoordinate">Y-Koordinate der Station</param>
-        public static void ShowGoogleMapsRoute(double xKoordinate, double yKoordinate)
+        private static void ShowGoogleMapsRoute(double xKoordinate, double yKoordinate)
         {
             string url = String.Format("http://maps.google.de/maps?q={0},{1}", xKoordinate, yKoordinate);
             frmWebBrowser webBrowser = new frmWebBrowser(url);
@@ -437,15 +311,92 @@ namespace SwissTransportTimetable
         }
 
         /// <summary>
-        ///  List das Stationobjekt zu einem Stationsname aus.
+        ///  Validiert die Stationsnamen
         /// </summary>
-        ///  <param name="stationName">Stationsname</param>
-        ///  <returns>Station: Station</returns>
-        public Station GetStation(string stationName)
+        ///  <param name="txtStation">TextBox des Stationsnamen</param>
+        /// <param name="isFromStation">Startstation</param>
+        private bool ValidateStations(TextBox txtStation, bool isFromStation)
         {
-            Transport transport = new Transport();
-            var transportStation = transport.GetStations(stationName).StationList[0];
-            return transportStation;
+            // Stationsname auslesen
+            string stationName = txtStation.Text;
+
+            // Prüfen, ob das Feld abgefüllt ist
+            if (string.IsNullOrEmpty(stationName))
+            {
+                MessageBox.Show(string.Format("Sie müssen die {0} ausfüllen", isFromStation ? "Startstation" : "Endstation"));
+                Cursor = Cursors.Default;
+                return false;
+            }
+
+            // Prüfen, ob der Name gültig ist
+            Task<List<Station>> foundStations;
+            try
+            {
+                foundStations = Task.Factory.StartNew(() => transport.GetStations(stationName).StationList);
+            }
+            catch (Exception ex)
+            {
+                StatusBarLabel.Text = string.Format("Die {0} konnte nicht validiert werden: {1}", isFromStation ? "Startstation" : "Endstation", ex.Message);
+                Cursor = Cursors.Default;
+                return false;
+            }
+
+            if (foundStations.Result.Find(x => x.Name.ToLower().Contains(stationName.ToLower())) == null)
+            {
+                MessageBox.Show(string.Format("Die {0} ist ungültig.", isFromStation ? "Startstation" : "Endstation"));
+                Cursor = Cursors.Default;
+                return false;
+            }
+
+            // Korrekter Stationsname abfüllen
+            txtStation.Text = foundStations.Result.Find(x => x.Name.ToLower().Contains(stationName.ToLower())).Name.ToString();
+            Cursor = Cursors.Default;
+
+            return true;
+        }
+
+        /// <summary>
+        ///  Validierung der Daten für GoogleMaps-Aufruf
+        /// </summary>
+        ///  <param name="txtStation">TextBox des Stationsnamen</param>
+        /// <param name="isFromStation">Startstation</param>
+        private void OpenMaps(TextBox txtStation, bool isFromStation)
+        {
+            // Station validieren
+            bool valid = ValidateStations(txtStation, isFromStation);
+            if (!valid)
+            {
+                return;
+            }
+
+            // Station auslesen und Karte öggnen
+            Station station;
+            try
+            {
+                station = transport.GetStations(txtStation.Text).StationList[0];
+            }
+            catch (Exception ex)
+            {
+                StatusBarLabel.Text = string.Format("Die {0} konnte nicht gefunden werden: {1}", isFromStation ? "Startstation" : "Endstation", ex.Message);
+                return;
+            }
+
+            StatusBarLabel.Text = "Karte wird geöffnet.";
+            ShowGoogleMapsRoute(station.Coordinate.XCoordinate, station.Coordinate.YCoordinate);
+        }
+
+        /// <summary>
+        ///  Fügt die AutoComplete-Werte zu der Textbox hinzu
+        /// </summary>
+        ///  <param name="txtStation">TextBox des Stationsnamen</param>
+        /// <param name="isFromStation">Startstation</param>
+        private void AutoComplete(TextBox txtStation, bool isFromStation)
+        {
+            var source = Task.Factory.StartNew(() => AutocompleteSource(txtStation.Text));
+            var station = isFromStation ? txtFromStation : txtToStation;
+            station.AutoCompleteCustomSource = source.Result;
+            station.AutoCompleteMode = AutoCompleteMode.SuggestAppend;
+            station.AutoCompleteSource = AutoCompleteSource.CustomSource;
         }
     }
 }

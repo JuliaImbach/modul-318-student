@@ -20,7 +20,7 @@ namespace SwissTransportTimetable
         }
 
         //Properties
-        public string Nachricht { get; set; }
+        private string Nachricht { get; set; }
 
         /// <summary>
         ///  Der Mailversand wird ausgelöst und Mail aus den

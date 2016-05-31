@@ -14,11 +14,10 @@ namespace SwissTransportTimetable
         public frmWebBrowser(string url) : this()
         {
             this.Url = url;
-
         }
 
         //Properties
-        public string Url { get; set; }
+        private string Url { get; set; }
 
         /// <summary>
         ///  Lädt die Url in die Form.
