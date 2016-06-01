@@ -1,0 +1,53 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="SwissTransportTimetable.Hauptform">
+    <Position X="2.25" Y="0.5" Width="2.75" />
+    <Compartments>
+      <Compartment Name="Fields" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier>
+      <HashCode>IABAGABgQCQACBAIAICAAIACAAAUwIg8AAAEiIAIAAA=</HashCode>
+      <FileName>Hauptform.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SwissTransportTimetable.Mail">
+    <Position X="5" Y="0.5" Width="1.5" />
+    <Compartments>
+      <Compartment Name="Fields" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier>
+      <HashCode>AQAAEAIAQCECABAIAACAAAASAAAAAIAAAAAAAAAAAIA=</HashCode>
+      <FileName>Mail.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SwissTransportTimetable.Program">
+    <Position X="0.5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAAAA=</HashCode>
+      <FileName>Program.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SwissTransportTimetable.frmWebBrowser">
+    <Position X="7.25" Y="0.5" Width="1.5" />
+    <Compartments>
+      <Compartment Name="Fields" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAACAAAAAAAQCAAAACAAAAAAAACAAAAAAAAAA=</HashCode>
+      <FileName>WebBrowser.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SwissTransportTimetable.Properties.Resources">
+    <Position X="10.5" Y="3" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAABEAAAAQAAAAAAAAAAAAAAAIA=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SwissTransportTimetable.Properties.Settings">
+    <Position X="10.5" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAIAAAAAABAAAAAAAAAAAAAAA=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Font Name="Tahoma" Size="8.25" />
+</ClassDiagram>

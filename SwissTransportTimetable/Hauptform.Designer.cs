@@ -103,10 +103,10 @@
             this.lblVerbindungen.TabIndex = 6;
             this.lblVerbindungen.Text = "Verbindungen";
             // 
-            // btnDeparture
+            // btnStationboard
             // 
             this.btnStationboard.Location = new System.Drawing.Point(502, 30);
-            this.btnStationboard.Name = "btnDeparture";
+            this.btnStationboard.Name = "btnStationboard";
             this.btnStationboard.Size = new System.Drawing.Size(75, 23);
             this.btnStationboard.TabIndex = 4;
             this.btnStationboard.Text = "Abfahrstafel";
@@ -117,7 +117,6 @@
             // 
             this.listViewConnection.FullRowSelect = true;
             this.listViewConnection.Location = new System.Drawing.Point(13, 160);
-            this.listViewConnection.MultiSelect = false;
             this.listViewConnection.Name = "listViewConnection";
             this.listViewConnection.Size = new System.Drawing.Size(516, 140);
             this.listViewConnection.TabIndex = 8;
@@ -211,8 +210,8 @@
             this.Controls.Add(this.label1);
             this.Controls.Add(this.txtFromStation);
             this.Controls.Add(this.cmdSearch);
-            this.MaximumSize = new System.Drawing.Size(750, 360);
-            this.MinimumSize = new System.Drawing.Size(550, 342);
+            this.MaximumSize = new System.Drawing.Size(604, 360);
+            this.MinimumSize = new System.Drawing.Size(604, 360);
             this.Name = "Hauptform";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "ÖV-Verbindungen";

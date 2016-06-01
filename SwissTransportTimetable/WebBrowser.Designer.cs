@@ -1,6 +1,6 @@
 ﻿namespace SwissTransportTimetable
 {
-    partial class frmWebBrowser
+    partial class WebBrowserForm
     {
         /// <summary>
         /// Required designer variable.

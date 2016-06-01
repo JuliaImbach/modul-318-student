@@ -30,7 +30,7 @@ namespace SwissTransportTimetable
         /// </summary>
         /// <param name="sender">Sender</param>
         /// <param name="e">Click-Event</param>
-        private void btnSearch_Click(object sender, EventArgs e)
+        private async void btnSearch_Click(object sender, EventArgs e)
         {
             // Stationen auslesen und validieren
             string fromStation = txtFromStation.Text;
@@ -41,14 +41,14 @@ namespace SwissTransportTimetable
             StatusBarLabel.Text = "Die Eingaben werden überprüft...";
 
             // Start- und Endstation validieren
-            var valid = ValidateStations(txtFromStation, true);         
-            if (!valid.Result)
+            var valid = await ValidateStations(txtFromStation, true);         
+            if (!valid)
             {
                 return;
             }
 
-            valid = ValidateStations(txtToStation, false);
-            if (!valid.Result)
+            valid = await ValidateStations(txtToStation, false);
+            if (!valid)
             {
                 return;
             }
@@ -134,8 +134,8 @@ namespace SwissTransportTimetable
             string fromStation = txtFromStation.Text;
 
             // Startstation validieren
-            var valid = ValidateStations(txtFromStation, true);
-            if (!valid.Result)
+            var valid = await ValidateStations(txtFromStation, true);
+            if (!valid)
             {
                 return;
             }
@@ -218,7 +218,7 @@ namespace SwissTransportTimetable
             // Nachricht zusammensetzen
             string nachricht = GetTableHeader() + GetTableLines();
 
-            Mail mail = new Mail(nachricht);
+            MailForm mail = new MailForm(nachricht);
             mail.ShowDialog();
         }
 
@@ -253,22 +253,27 @@ namespace SwissTransportTimetable
         /// <returns>string: Tabellenzeile</returns>
         private string GetTableLines()
         {
-            var index = listViewConnection.SelectedIndices[0];
+            var indexes = listViewConnection.SelectedIndices;
+            var message = "";
 
-            // Spalten-Werte von selektierter Zeile in List laden
-            List<string> values = new List<string>();
-            for (int spalte = 0; spalte < listViewConnection.Columns.Count; spalte++)
+            foreach (int index in indexes)
             {
-                values.Add(listViewConnection.Items[index].SubItems[spalte].Text);
-            }
+                // Spalten-Werte von selektierter Zeile in List laden
+                List<string> values = new List<string>();
+                for (int spalte = 0; spalte < listViewConnection.Columns.Count; spalte++)
+                {
+                    values.Add(listViewConnection.Items[index].SubItems[spalte].Text);
+                }
 
-            // Message in HTML abfüllen
-            var message = "<tr>";
-            foreach (var value in values)
-            {
-                message += $"<td {CellStyle}>{value}</td>";
+                // Message in HTML abfüllen
+                message += "<tr>";
+                foreach (var value in values)
+                {
+                    message += $"<td {CellStyle}>{value}</td>";
+                }
+
+                message += "</tr>";
             }
-            message += "</tr>";
             return message;
         }
 
@@ -358,7 +363,7 @@ namespace SwissTransportTimetable
         private static void ShowGoogleMapsRoute(double xKoordinate, double yKoordinate)
         {
             string url = String.Format("http://maps.google.de/maps?q={0},{1}", xKoordinate, yKoordinate);
-            frmWebBrowser webBrowser = new frmWebBrowser(url);
+            WebBrowserForm webBrowser = new WebBrowserForm(url);
             webBrowser.Show();
         }
 

@@ -7,15 +7,15 @@ using SwissTransport;
 
 namespace SwissTransportTimetable
 {
-    public partial class Mail : Form
+    public partial class MailForm : Form
     {
         //Konstruktoren
-        public Mail()
+        public MailForm()
         {
             InitializeComponent();
         }
 
-        public Mail(string nachricht) : this()
+        public MailForm(string nachricht) : this()
         {
             this.Nachricht = nachricht;
         }
@@ -38,7 +38,7 @@ namespace SwissTransportTimetable
 
             try
             {
-                sendMail(absender, empfaenger, betreff, nachricht, ConfigurationManager.AppSettings["smtp-server"], Convert.ToInt32(ConfigurationManager.AppSettings["port"]), txtPasswort.Text);
+                SendMail(absender, empfaenger, betreff, nachricht, ConfigurationManager.AppSettings["smtp-server"], Convert.ToInt32(ConfigurationManager.AppSettings["port"]), txtPasswort.Text);
             }
             catch (Exception ex)
             {
@@ -60,7 +60,7 @@ namespace SwissTransportTimetable
         /// <param name="user">Benutzername</param>
         /// <param name="passwort">Passwort</param>
         /// <returns>StationBoard-List: Liste mit Abfahrtszeiten</returns>
-        public void sendMail(string absender, string empfaenger, string betreff, string nachricht, string server, int port, string passwort)
+        public void SendMail(string absender, string empfaenger, string betreff, string nachricht, string server, int port, string passwort)
         {
             MailMessage Email = new MailMessage();
 

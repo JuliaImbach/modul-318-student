@@ -3,15 +3,15 @@ using System.Windows.Forms;
 
 namespace SwissTransportTimetable
 {
-    public partial class frmWebBrowser : Form
+    public partial class WebBrowserForm : Form
     {
         //Konstruktoren
-        public frmWebBrowser()
+        public WebBrowserForm()
         {
             InitializeComponent();
         }
 
-        public frmWebBrowser(string url) : this()
+        public WebBrowserForm(string url) : this()
         {
             this.Url = url;
         }

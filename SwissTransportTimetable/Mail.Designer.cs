@@ -1,6 +1,6 @@
 ﻿namespace SwissTransportTimetable
 {
-    partial class Mail
+    partial class MailForm
     {
         /// <summary>
         /// Required designer variable.
@@ -133,7 +133,7 @@
             this.label5.TabIndex = 10;
             this.label5.Text = "Passwort";
             // 
-            // Mail
+            // MailForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -150,8 +150,8 @@
             this.Controls.Add(this.txtAbsender);
             this.Controls.Add(this.label1);
             this.MaximumSize = new System.Drawing.Size(300, 363);
-            this.MinimumSize = new System.Drawing.Size(300, 323);
-            this.Name = "Mail";
+            this.MinimumSize = new System.Drawing.Size(300, 363);
+            this.Name = "MailForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Mail";
             this.ResumeLayout(false);
