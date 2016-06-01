@@ -8,5 +8,6 @@ namespace SwissTransport
         StationBoardRoot GetStationBoard(string station, string id);
         Connections GetConnections(string fromStation, string toStation);
         Connections GetConnectionsDate(string fromStation, string toStattion, string date, string time, string isArrivalTime);
+        StationBoardRoot GetStationBoardDate(string station, string id, string datetime);
     }
 }

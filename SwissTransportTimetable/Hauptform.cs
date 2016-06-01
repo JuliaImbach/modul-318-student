@@ -130,8 +130,9 @@ namespace SwissTransportTimetable
         {
             StatusBarLabel.Text = "Abfahrtszeiten werden geladen...";
 
-            // Stationsname auslesen
+            // Stationsname & Datum auslesen
             string fromStation = txtFromStation.Text;
+            string dateTime = Convert.ToDateTime(dateConnection.Text).ToString("yyyy-MM-dd HH:mm");
 
             // Startstation validieren
             var valid = await ValidateStations(txtFromStation, true);
@@ -162,7 +163,7 @@ namespace SwissTransportTimetable
             List<StationBoard> timetables;
             try
             {
-                timetables = transport.GetStationBoard(fromStation, station.StationList[0].Id).Entries;
+                timetables = transport.GetStationBoardDate(fromStation, station.StationList[0].Id, dateTime).Entries;
             }
             catch (Exception ex)
             {

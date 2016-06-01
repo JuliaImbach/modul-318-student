@@ -102,5 +102,10 @@ namespace SwissTransportTimetable
                 + "</table>"
                 + "</body>";
         }
+
+        private void OnLoad(object sender, EventArgs e)
+        {
+            txtAbsender.Text = ConfigurationManager.AppSettings["senderAddress"];
+        }
     }
 }
