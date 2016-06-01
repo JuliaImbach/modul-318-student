@@ -60,7 +60,7 @@ namespace SwissTransportTimetable
             Task<List<Connection>> connections = null;
             try
             {
-                connections = Task.Factory.StartNew(() => new Transport().GetConnectionsDate(fromStation, toStation, date, time, isArrival ? "1" : "0").ConnectionList);
+                connections = Task.Factory.StartNew(() => transport.GetConnectionsDate(fromStation, toStation, date, time, isArrival ? "1" : "0").ConnectionList);
             }
             catch (Exception ex)
             {
@@ -145,7 +145,7 @@ namespace SwissTransportTimetable
             Task<List<StationBoard>> timetables;
             try
             {
-                timetables = Task.Factory.StartNew(() => transport.GetStationBoard(fromStation, transport.GetStations(fromStation).StationList[0].Id).Entries);
+                timetables = Task.Factory.StartNew(() => transport.GetStationBoard(fromStation, transport.GetStations(fromStation).Result.StationList[0].Id).Entries);
             }
             catch (Exception ex)
             {
@@ -309,7 +309,7 @@ namespace SwissTransportTimetable
             }
 
             // Autocomplete hinzufügen
-            AutoComplete(txtToStation, true);
+            AutoComplete(txtToStation, false);
         }
 
         /// <summary>
@@ -318,13 +318,13 @@ namespace SwissTransportTimetable
         /// </summary>
         /// <param name="station">Stationsname</param>
         /// <returns>AutoCompleteStringCollection: Source mit Stationen für AutoComplete</returns>
-        public AutoCompleteStringCollection AutocompleteSource(string station)
+        public async Task<AutoCompleteStringCollection> AutocompleteSource(string station)
         {
             //Liste mit allen Station in eine Liste laden
             var source = new AutoCompleteStringCollection();
 
-            var transportList = transport.GetStations(station).StationList;
-            foreach (var transportStation in transportList)
+            var transportList = await transport.GetStations(station);
+            foreach (var transportStation in transportList.StationList)
             {
                 source.Add(transportStation.Name.ToString());
             }
@@ -364,10 +364,12 @@ namespace SwissTransportTimetable
             }
 
             // Prüfen, ob der Name gültig ist
-            Task<List<Station>> foundStations;
+            //Task<List<Station>> foundStations;
+            List<Station> foundStations;
             try
             {
-                foundStations = Task.Factory.StartNew(() => transport.GetStations(stationName).StationList);
+                foundStations = transport.GetStations(stationName).Result.StationList;
+                // foundStations = Task.Factory.StartNew(() => transport.GetStations(stationName).StationList);
             }
             catch (Exception ex)
             {
@@ -376,7 +378,8 @@ namespace SwissTransportTimetable
                 return false;
             }
 
-            if (foundStations.Result.Find(x => x.Name.ToLower().Contains(stationName.ToLower())) == null)
+            //if (foundStations.Result.Find(x => x.Name.ToLower().Contains(stationName.ToLower())) == null)
+            if (foundStations.Find(x => x.Name.ToLower().Contains(stationName.ToLower())) == null)
             {
                 MessageBox.Show(string.Format("Die {0} ist ungültig.", isFromStation ? "Startstation" : "Endstation"));
                 Cursor = Cursors.Default;
@@ -384,7 +387,8 @@ namespace SwissTransportTimetable
             }
 
             // Korrekter Stationsname abfüllen
-            txtStation.Text = foundStations.Result.Find(x => x.Name.ToLower().Contains(stationName.ToLower())).Name.ToString();
+            //txtStation.Text = foundStations.Result.Find(x => x.Name.ToLower().Contains(stationName.ToLower())).Name.ToString();
+            txtStation.Text = foundStations.Find(x => x.Name.ToLower().Contains(stationName.ToLower())).Name.ToString();
             Cursor = Cursors.Default;
 
             return true;
@@ -404,11 +408,12 @@ namespace SwissTransportTimetable
                 return;
             }
 
-            // Station auslesen und Karte öggnen
+            // Station auslesen und Karte öffnen
             Station station;
             try
             {
-                station = transport.GetStations(txtStation.Text).StationList[0];
+                // station = transport.GetStations(txtStation.Text).StationList[0];
+                station = transport.GetStations(txtStation.Text).Result.StationList[0];
             }
             catch (Exception ex)
             {
@@ -425,11 +430,11 @@ namespace SwissTransportTimetable
         /// </summary>
         ///  <param name="txtStation">TextBox des Stationsnamen</param>
         /// <param name="isFromStation">Startstation</param>
-        private void AutoComplete(TextBox txtStation, bool isFromStation)
+        private async void AutoComplete(TextBox txtStation, bool isFromStation)
         {
-            var source = Task.Factory.StartNew(() => AutocompleteSource(txtStation.Text));
+            var source = await AutocompleteSource(txtStation.Text);
             var station = isFromStation ? txtFromStation : txtToStation;
-            station.AutoCompleteCustomSource = source.Result;
+            station.AutoCompleteCustomSource = source;
             station.AutoCompleteMode = AutoCompleteMode.SuggestAppend;
             station.AutoCompleteSource = AutoCompleteSource.CustomSource;
         }

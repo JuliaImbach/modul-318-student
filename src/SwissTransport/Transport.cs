@@ -1,12 +1,13 @@
 ﻿using System.IO;
 using System.Net;
 using Newtonsoft.Json;
+using System.Threading.Tasks;
 
 namespace SwissTransport
 {
     public class Transport : ITransport
     {
-        public Stations GetStations(string query)
+        public async Task<Stations> GetStations(string query)
         {
             var request = CreateWebRequest("http://transport.opendata.ch/v1/locations?query=" + query);
             var response = request.GetResponse();
@@ -14,7 +15,7 @@ namespace SwissTransport
 
             if (responseStream != null)
             {
-                var message = new StreamReader(responseStream).ReadToEnd();
+                var message = await new StreamReader(responseStream).ReadToEndAsync();
                 var stations = JsonConvert.DeserializeObject<Stations>(message);
                 return stations;
             }
