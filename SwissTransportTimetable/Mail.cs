@@ -86,6 +86,9 @@ namespace SwissTransportTimetable
             MailClient.Send(Email);
         }
 
+        /// <summary>
+        ///  Mail-Text in HTML-Struktur abfüllen
+        /// </summary>
         private string CreateBodyMesssage(string nachricht, string connectionMessage)
         {
             return "<!DOCTPYPE html>"

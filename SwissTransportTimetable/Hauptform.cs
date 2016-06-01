@@ -9,7 +9,7 @@ namespace SwissTransportTimetable
     public partial class Hauptform : Form
     {
         // Membervariabeln
-        Transport transport = new Transport();
+        private Transport transport = new Transport();
 
         // Konstruktoren
         public Hauptform()
@@ -21,7 +21,7 @@ namespace SwissTransportTimetable
         /// <summary>
         /// Definition des Styles für die Mail
         /// </summary>
-        private string CellStyle { get; } = "style=\"border: 1px solid black; padding: 5px;\"";
+        private string CellStyle { get; } = "style=\"border: 1px solid black; padding: 3px;\"";
 
         /// <summary>
         ///  Beim Klick auf den Button "Suchen" werden die Verbindungen
@@ -32,21 +32,23 @@ namespace SwissTransportTimetable
         /// <param name="e">Click-Event</param>
         private void btnSearch_Click(object sender, EventArgs e)
         {
-            // Sanduhr einblenden
-            Cursor.Current = Cursors.WaitCursor;
-
             // Stationen auslesen und validieren
             string fromStation = txtFromStation.Text;
             string toStation = txtToStation.Text;
 
+            lblVerbindungen.Text = "Verbindungen";
+
+            StatusBarLabel.Text = "Die Eingaben werden überprüft...";
+
             // Start- und Endstation validieren
-            bool valid = ValidateStations(txtFromStation, true);
-            if (!valid)
+            var valid = ValidateStations(txtFromStation, true);         
+            if (!valid.Result)
             {
                 return;
             }
+
             valid = ValidateStations(txtToStation, false);
-            if (!valid)
+            if (!valid.Result)
             {
                 return;
             }
@@ -57,10 +59,10 @@ namespace SwissTransportTimetable
             bool isArrival = chbAnkunft.Checked;
 
             // Verbindungen auslesen
-            Task<List<Connection>> connections = null;
+            List<Connection> connections = null;
             try
             {
-                connections = Task.Factory.StartNew(() => transport.GetConnectionsDate(fromStation, toStation, date, time, isArrival ? "1" : "0").ConnectionList);
+                connections = transport.GetConnectionsDate(fromStation, toStation, date, time, isArrival ? "1" : "0").ConnectionList;
             }
             catch (Exception ex)
             {
@@ -80,14 +82,14 @@ namespace SwissTransportTimetable
             listViewConnection.Columns.Add("zu Station", (listViewConnection.Width - 300) / 2);
             listViewConnection.Columns.Add("Dauer", 100);
 
-            if (connections.Result.Count == 0)
+            if (connections.Count == 0)
             {
                 StatusBarLabel.Text = "Keine Verbindungen verfügbar.";
                 return;
             }
 
             // Verbindungen in ListView abfüllen
-            foreach (var connection in connections.Result)
+            foreach (var connection in connections)
             {
                 var duration = "";
 
@@ -124,28 +126,43 @@ namespace SwissTransportTimetable
         /// </summary>
         /// <param name="sender">Sender</param>
         /// <param name="e">Click-Event</param>
-        private void btnStationBoard_Click(object sender, EventArgs e)
+        private async void btnStationBoard_Click(object sender, EventArgs e)
         {
             StatusBarLabel.Text = "Abfahrtszeiten werden geladen...";
-
-            // Sanduhr einblenden
-            Cursor.Current = Cursors.WaitCursor;
 
             // Stationsname auslesen
             string fromStation = txtFromStation.Text;
 
             // Startstation validieren
-            bool valid = ValidateStations(txtFromStation, true);
-            if (!valid)
+            var valid = ValidateStations(txtFromStation, true);
+            if (!valid.Result)
             {
                 return;
             }
 
-            // Abfahrtszeiten auslesen
-            Task<List<StationBoard>> timetables;
+            lblVerbindungen.Text = "Verbindungen ab " + txtFromStation.Text;
+
+            // Sanduhr einblenden
+            Cursor.Current = Cursors.WaitCursor;
+
+            // Stations-ID auslesen
+            Stations station;
             try
             {
-                timetables = Task.Factory.StartNew(() => transport.GetStationBoard(fromStation, transport.GetStations(fromStation).Result.StationList[0].Id).Entries);
+                station = await transport.GetStations(fromStation);
+            }
+            catch(Exception ex)
+            {
+                StatusBarLabel.Text = "Die Stations-ID konnte nicht ausgelsen werden: " + ex.Message;
+                Cursor = Cursors.Default;
+                return;
+            }
+
+            // Abfahrtszeiten auslesen
+            List<StationBoard> timetables;
+            try
+            {
+                timetables = transport.GetStationBoard(fromStation, station.StationList[0].Id).Entries;
             }
             catch (Exception ex)
             {
@@ -161,13 +178,13 @@ namespace SwissTransportTimetable
             listViewConnection.Columns.Add("Linie", 100);
             listViewConnection.Columns.Add("Endstation", listViewConnection.Width - 220);
 
-            if (timetables.Result.Count == 0)
+            if (timetables.Count == 0)
             {
                 StatusBarLabel.Text = "Zu dieser Status sind keine Abfahrtszeiten verfügbar.";
                 return;
             }
 
-            foreach (var timetable in timetables.Result)
+            foreach (var timetable in timetables)
             {
                 // Item abfüllen
                 ListViewItem item = new ListViewItem(new[] {
@@ -178,6 +195,7 @@ namespace SwissTransportTimetable
 
                 listViewConnection.Items.Add(item);
             }
+
             StatusBarLabel.Text = "Abfahrtszeiten wurden geladen.";
 
             //Cursor zurücksetzen
@@ -289,7 +307,7 @@ namespace SwissTransportTimetable
             {
                 return;
             }
-
+            
             // Autocomplete hinzufügen
             AutoComplete(txtFromStation, true);
         }
@@ -350,8 +368,11 @@ namespace SwissTransportTimetable
         ///  <param name="txtStation">TextBox des Stationsnamen</param>
         /// <param name="isFromStation">Startstation</param>
         /// <returns>bool: Validation</returns>
-        private bool ValidateStations(TextBox txtStation, bool isFromStation)
+        private async Task<bool> ValidateStations(TextBox txtStation, bool isFromStation)
         {
+            // Sanduhr einblenden
+            Cursor.Current = Cursors.WaitCursor;
+
             // Stationsname auslesen
             string stationName = txtStation.Text;
 
@@ -364,12 +385,10 @@ namespace SwissTransportTimetable
             }
 
             // Prüfen, ob der Name gültig ist
-            //Task<List<Station>> foundStations;
-            List<Station> foundStations;
+            Stations foundStations;
             try
             {
-                foundStations = transport.GetStations(stationName).Result.StationList;
-                // foundStations = Task.Factory.StartNew(() => transport.GetStations(stationName).StationList);
+                 foundStations = await transport.GetStations(stationName);
             }
             catch (Exception ex)
             {
@@ -378,8 +397,7 @@ namespace SwissTransportTimetable
                 return false;
             }
 
-            //if (foundStations.Result.Find(x => x.Name.ToLower().Contains(stationName.ToLower())) == null)
-            if (foundStations.Find(x => x.Name.ToLower().Contains(stationName.ToLower())) == null)
+            if (foundStations.StationList.Find(x => x.Name.ToLower().Contains(stationName.ToLower())) == null)
             {
                 MessageBox.Show(string.Format("Die {0} ist ungültig.", isFromStation ? "Startstation" : "Endstation"));
                 Cursor = Cursors.Default;
@@ -387,8 +405,7 @@ namespace SwissTransportTimetable
             }
 
             // Korrekter Stationsname abfüllen
-            //txtStation.Text = foundStations.Result.Find(x => x.Name.ToLower().Contains(stationName.ToLower())).Name.ToString();
-            txtStation.Text = foundStations.Find(x => x.Name.ToLower().Contains(stationName.ToLower())).Name.ToString();
+            txtStation.Text = foundStations.StationList.Find(x => x.Name.ToLower().Contains(stationName.ToLower())).Name.ToString();
             Cursor = Cursors.Default;
 
             return true;
@@ -399,21 +416,20 @@ namespace SwissTransportTimetable
         /// </summary>
         ///  <param name="txtStation">TextBox des Stationsnamen</param>
         /// <param name="isFromStation">Startstation</param>
-        private void OpenMaps(TextBox txtStation, bool isFromStation)
+        private async void OpenMaps(TextBox txtStation, bool isFromStation)
         {
             // Station validieren
-            bool valid = ValidateStations(txtStation, isFromStation);
+            bool valid = await ValidateStations(txtStation, isFromStation);
             if (!valid)
             {
                 return;
             }
 
             // Station auslesen und Karte öffnen
-            Station station;
+            Stations station;
             try
             {
-                // station = transport.GetStations(txtStation.Text).StationList[0];
-                station = transport.GetStations(txtStation.Text).Result.StationList[0];
+                station = await transport.GetStations(txtStation.Text);
             }
             catch (Exception ex)
             {
@@ -422,7 +438,7 @@ namespace SwissTransportTimetable
             }
 
             StatusBarLabel.Text = "Karte wird geöffnet.";
-            ShowGoogleMapsRoute(station.Coordinate.XCoordinate, station.Coordinate.YCoordinate);
+            ShowGoogleMapsRoute(station.StationList[0].Coordinate.XCoordinate, station.StationList[0].Coordinate.YCoordinate);
         }
 
         /// <summary>
@@ -437,6 +453,31 @@ namespace SwissTransportTimetable
             station.AutoCompleteCustomSource = source;
             station.AutoCompleteMode = AutoCompleteMode.SuggestAppend;
             station.AutoCompleteSource = AutoCompleteSource.CustomSource;
+        }
+
+        /// <summary>
+        ///  Tooltips für einzelne Elemente hinzufügen
+        /// </summary>
+        ///  <param name="sender">Sender</param>
+        /// <param name="e">Load-Event</param>
+        private void OnLoad(object sender, EventArgs e)
+        {
+            // Tooltip erstellen
+            ToolTip toolTip = new ToolTip();
+
+            // Verzögerung definieren
+            toolTip.AutoPopDelay = 5000;
+            toolTip.InitialDelay = 1000;
+            toolTip.ReshowDelay = 500;
+
+            // Sichtbarkeit
+            toolTip.ShowAlways = true;
+
+            // Texte für Controls abfüllen
+            toolTip.SetToolTip(this.btnStationboard, "Verbindungen ab Startstation anzeigen.");
+            toolTip.SetToolTip(this.btnMail, "Markieren Sie eine Verbindung, um diese per Mail zu vernsenden.");
+            toolTip.SetToolTip(this.mapsStartStation, "Station auf Googlemaps anzeigen.");
+            toolTip.SetToolTip(this.mapsEndStation, "Station auf Googlemaps anzeigen.");
         }
     }
 }
